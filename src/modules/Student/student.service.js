@@ -1,12 +1,15 @@
 const StudentModel = require('./student.model.js')
 const { sequelize } = require('../../services/sequelize.service.js');
 const SequelizeError = require('../../errors/sequelize.error.js');
-const japanLanguageTestModel = require('../JapanLanguageTests/japanLanguageTest.model.js');
+const JapanLanguageTestModel = require('../JapanLanguageTests/JapanLanguageTest.model.js');
+const SkillsModel = require('../Skills/skill.model.js');
+const ItQualificationModel = require('../ItQualifications/ItQualification.model.js');
 
 class StudentServices {
     constructor(sequelize) {
         StudentModel(sequelize);
-        japanLanguageTestModel(sequelize);
+        JapanLanguageTestModel(sequelize);
+        ItQualificationModel(sequelize)
         this.models = sequelize.models;
     }
 
@@ -14,7 +17,16 @@ class StudentServices {
         try {
             const student = await this.models.Students.create(body, {
                 include: [
-                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests' }
+                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests' },
+                    {
+                        model: this.models.ItQualifications, as: 'ItQualification', include: [
+                            {
+                                model: this.models.ItQualificationResults, as: 'skills', include: [
+                                    { model: this.models.Skills, as: 'skill' }
+                                ]
+                            }
+                        ]
+                    },
                 ]
             })
             return student
@@ -30,6 +42,19 @@ class StudentServices {
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
+                    {
+                        model: this.models.ItQualifications, as: 'ItQualification',
+                        attributes: { exclude: ['studentId'] },
+                        include: [
+                            {
+                                model: this.models.ItQualificationResults, as: 'skills',
+                                attributes: { exclude: ['ItQualificationId', 'skillId'] },
+                                include: [
+                                    { model: this.models.Skills, as: 'skill' }
+                                ]
+                            }
+                        ]
+                    },
                 ],
                 attributes: { exclude: ['specialisationId', 'password', 'isDeleted'] },
                 offset: (page - 1) * limit,

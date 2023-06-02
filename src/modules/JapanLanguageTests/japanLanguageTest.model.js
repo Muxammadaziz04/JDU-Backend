@@ -61,6 +61,7 @@ module.exports = (sequelize) => {
             })
         }
 
+        return JapanLanguageTest
     } catch (error) {
         logger.error(error.message)
     }

@@ -22,10 +22,7 @@ const connectToDB = async () => {
             });
 
         if (process.env.NODE_ENV === "production") {
-            sequelize.sync({ alter: true })
-                .then(() => {
-                    console.log(sequelize.models);
-                })
+            sequelize.sync()
         } else {
             sequelize.sync({ alter: true })
         }

@@ -1,10 +1,12 @@
 const SpecialisationModel = require('./specialisation.model.js')
 const { sequelize } = require("../../services/sequelize.service")
-const SequelizeError = require('../../errors/sequelize.error.js')
+const SequelizeError = require('../../errors/sequelize.error.js');
+const ItQualificationResultModel = require('../ItQualificationResults/ItQualificationResult.model.js');
 
 class SpecialisationServices {
     constructor(sequelize) {
         SpecialisationModel(sequelize);
+        ItQualificationResultModel(sequelize)
         this.models = sequelize.models;
     }
 

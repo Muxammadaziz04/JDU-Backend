@@ -73,7 +73,6 @@ module.exports = (sequelize) => {
             }
         }, {
             sequelize,
-            freezeTableName: true,
             modelName: 'Students',
         })
 
@@ -92,6 +91,14 @@ module.exports = (sequelize) => {
                     allowNull: false
                 },
                 as: 'japanLanguageTests',
+            })
+
+            models.Students.hasOne(models.ItQualifications, {
+                foreignKey: {
+                    name: 'studentId',
+                    allowNull: false
+                },
+                as: 'ItQualification',
             })
         }
 

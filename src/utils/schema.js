@@ -17,7 +17,8 @@ const studentSchema = Joi.object({
         listening: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
         writing: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
         reading: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
-    }))
+    })),
+    ItQualification: Joi.object()
 })
 
 module.exports = {
