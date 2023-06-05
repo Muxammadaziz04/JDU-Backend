@@ -1,11 +1,11 @@
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const logger = require("../../services/logger.service");
 
-class ItQualification extends Model {}
+class Lesson extends Model {}
 
 module.exports = (sequelize) => {
     try {
-        ItQualification.init({
+        Lesson.init({
             id: {
                 type: DataTypes.UUID,
                 allowNull: false,
@@ -13,35 +13,33 @@ module.exports = (sequelize) => {
                 primaryKey: true,
                 unique: true,
             },
-            description: {
-                type: DataTypes.TEXT,
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false
             }
         }, {
             sequelize,
             timestamps: false,
-            modelName: 'ItQualifications'
+            modelName: 'Lessons'
         })
 
-        ItQualification.associate = (models) => {
-            models.ItQualifications.belongsTo(models.Students, {
+        Lesson.associate = (models) => {
+            models.Lessons.hasMany(models.Semesters, {
                 foreignKey: {
-                    name: 'studentId',
-                    allowNull: false
+                    name: 'lessonId',
                 },
-                onDelete: 'cascade',
-                as: 'student'
+                as: 'semesters',
             })
 
-            models.ItQualifications.hasMany(models.ItQualificationResults, {
+            models.Lessons.belongsTo(models.Students, {
                 foreignKey: {
-                    name: 'ItQualificationId',
-                    allowNull: false
+                    name: 'studentId',
                 },
-                as: 'skills'
+                as: 'student',
             })
         }
 
-        return ItQualification
+        return Lesson
     } catch (error) {
         logger.error(error.message)
     }

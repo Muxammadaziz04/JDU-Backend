@@ -98,7 +98,14 @@ module.exports = (sequelize) => {
                     name: 'studentId',
                     allowNull: false
                 },
-                as: 'ItQualification',
+                as: 'itQualification',
+            })
+
+            models.Students.hasMany(models.Lessons, {
+                foreignKey: {
+                    name: 'studentId',
+                },
+                as: 'lessons',
             })
         }
 

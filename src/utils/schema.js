@@ -18,7 +18,14 @@ const studentSchema = Joi.object({
         writing: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
         reading: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
     })),
-    ItQualification: Joi.object()
+    itQualification: Joi.object({
+        description: Joi.string(), 
+        skills: Joi.array().items(Joi.object({
+            procent: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)).required(),
+            skillId: Joi.string().uuid().required()
+        }))
+    }),
+    lessons: Joi.object()
 })
 
 module.exports = {
