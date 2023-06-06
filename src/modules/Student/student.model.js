@@ -106,6 +106,14 @@ module.exports = (sequelize) => {
                     name: 'studentId',
                 },
                 as: 'lessons',
+                onDelete: 'cascade'
+            })
+
+            models.Students.hasOne(models.UniversityPercentages, {
+                foreignKey: {
+                    name: 'studentId',
+                },
+                as: 'universityPercentage',
             })
         }
 

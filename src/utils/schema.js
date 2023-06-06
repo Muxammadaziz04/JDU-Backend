@@ -25,7 +25,8 @@ const studentSchema = Joi.object({
             skillId: Joi.string().uuid().required()
         }))
     }),
-    lessons: Joi.object()
+    lessons: Joi.object(),
+    universityPercentage: Joi.object()
 })
 
 module.exports = {

@@ -27,6 +27,7 @@ module.exports = (sequelize) => {
             models.Lessons.hasMany(models.Semesters, {
                 foreignKey: {
                     name: 'lessonId',
+                    allowNull: false
                 },
                 as: 'semesters',
             })
@@ -34,8 +35,11 @@ module.exports = (sequelize) => {
             models.Lessons.belongsTo(models.Students, {
                 foreignKey: {
                     name: 'studentId',
+                    allowNull: false
                 },
                 as: 'student',
+                onDelete: 'cascade',
+                hooks: true
             })
         }
 

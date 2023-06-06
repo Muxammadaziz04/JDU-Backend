@@ -43,8 +43,10 @@ module.exports = (sequelize) => {
             models.LessonResults.belongsTo(models.Semesters, {
                 foreignKey: {
                     name: 'semesterId',
+                    allowNull: false
                 },
-                as: 'semesters'
+                as: 'semesters',
+                onDelete: 'cascade'
             })
         }
 
