@@ -35,13 +35,9 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            courseNumber: {
+            yearOfAdmission: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                validate: {
-                    min: 1,
-                    max: 5
-                }
             },
             avatar: {
                 type: DataTypes.STRING,

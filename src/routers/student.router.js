@@ -7,5 +7,6 @@ const Controller = new StudentController()
 
 router.get('/students', Controller.getStudents)
 router.post('/student', validationMiddleware(studentSchema), Controller.createStudent)
+router.put('/student/:id', Controller.updateStudent)
 
 module.exports = router

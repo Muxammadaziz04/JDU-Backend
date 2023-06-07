@@ -61,6 +61,19 @@ module.exports = (sequelize) => {
                     max: 100
                 }
             },
+            AllMarks: {
+                type: DataTypes.INTEGER,
+                get() {
+                    const Attendee = this.getDataValue('Attendee') ?? 0
+                    const ItCourse = this.getDataValue('ItCourse') ?? 0
+                    const JapanLanguage = this.getDataValue('JapanLanguage') ?? 0
+                    const SannoUniversity = this.getDataValue('SannoUniversity') ?? 0
+                    const UzSWLUniversity = this.getDataValue('UzSWLUniversity') ?? 0
+                    const CoWork = this.getDataValue('CoWork') ?? 0
+
+                    return +((Attendee + ItCourse + JapanLanguage + SannoUniversity + UzSWLUniversity + CoWork) / 6).toFixed(2)
+                }
+            }
         }, {
             sequelize,
             timestamps: false,

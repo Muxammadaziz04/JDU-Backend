@@ -8,6 +8,13 @@ const lessonModel = require('../Lessons/lesson.model.js');
 const LessonResultModel = require('../LessonResults/LessonResult.model.js');
 const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
+const currentYear = 2023
+
+function calculateCourseNumber(admissionYear) {
+    console.log(admissionYear);
+    const currentYear = new Date().getFullYear();
+    return Math.ceil((currentYear - admissionYear) / 4);
+}
 
 class StudentServices {
     constructor(sequelize) {
@@ -50,7 +57,7 @@ class StudentServices {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
                 where: { isDeleted: false },
-                replacements: { id: Sequelize.col('id') },
+                // order: [['courseNumber', 'DESC']],
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
@@ -78,7 +85,7 @@ class StudentServices {
                         ],
                     }
                 ],
-                attributes: { exclude: ['specialisationId', 'password', 'isDeleted'] },
+                attributes: { exclude: ['specialisationId', 'password', 'isDeleted',] },
                 offset: (page - 1) * limit,
                 limit,
             })
@@ -86,6 +93,23 @@ class StudentServices {
             return students
         } catch (error) {
             return SequelizeError(error)
+        }
+    }
+
+    async update(id, body) {
+        try {
+            let student = await this.models.Students.update(body, {
+                where: { id },
+                include: [
+                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests' }
+                ],
+                returning: true
+            })
+
+            return student
+        } catch (error) {
+            return SequelizeError(error) 
+              
         }
     }
 }

@@ -6,7 +6,7 @@ const studentSchema = Joi.object({
     loginId: Joi.string().required(),
     password: Joi.string().required(),
     groupNumber: Joi.string().required(),
-    courseNumber: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number()).required(),
+    yearOfAdmission: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number()).required(),
     avatar: Joi.string().uri(),
     bio: Joi.string(),
     images: Joi.array().items(Joi.string().uri()),
