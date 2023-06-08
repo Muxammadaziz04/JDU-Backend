@@ -110,6 +110,7 @@ module.exports = (sequelize) => {
                     name: 'studentId',
                 },
                 as: 'universityPercentage',
+                onDelete: 'cascade'
             })
         }
 

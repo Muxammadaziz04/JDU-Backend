@@ -36,7 +36,21 @@ module.exports = (sequelize) => {
         }, {
             sequelize,
             timestamps: false,
-            modelName: 'LessonResults'
+            modelName: 'LessonResults',
+            hooks: {
+                beforeCreate: (model) => {
+                    const value = model.dataValues
+                    if(value.status === 'Completed') {
+                        model.credit = 0
+                    }
+                },
+                beforeUpdate: (model) => {
+                    const value = model.dataValues
+                    if(value.status === 'Completed') {
+                        model.credit = 0
+                    }
+                }
+            }
         })
 
         LessonResult.associate = (models) => {

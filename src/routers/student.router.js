@@ -6,7 +6,9 @@ const { studentSchema } = require('../utils/schema.js')
 const Controller = new StudentController()
 
 router.get('/students', Controller.getStudents)
+router.get('/student/:id', Controller.findById)
 router.post('/student', validationMiddleware(studentSchema), Controller.createStudent)
 router.put('/student/:id', Controller.updateStudent)
+router.delete('/student/:id', Controller.deleteStudent)
 
 module.exports = router

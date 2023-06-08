@@ -3,6 +3,21 @@ const logger = require("../../services/logger.service");
 
 class UniversityPercentage extends Model { }
 
+function calculateAllMarks(model) {
+    const value = model.dataValues
+
+    const Attendee = value.Attendee
+    const ItCourse = value.ItCourse
+    const JapanLanguage = value.JapanLanguage
+    const SannoUniversity = value.SannoUniversity
+    const UzSWLUniversity = value.UzSWLUniversity
+    const CoWork = value.CoWork
+
+    const results = [Attendee, ItCourse, JapanLanguage, SannoUniversity, UzSWLUniversity, CoWork]
+
+    return +(results.reduce((acc, curr) => (acc + curr), 0) / results.length).toFixed(2)
+}
+
 module.exports = (sequelize) => {
     try {
         UniversityPercentage.init({
@@ -16,6 +31,7 @@ module.exports = (sequelize) => {
             Attendee: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
@@ -24,6 +40,7 @@ module.exports = (sequelize) => {
             ItCourse: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
@@ -32,6 +49,7 @@ module.exports = (sequelize) => {
             JapanLanguage: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
@@ -40,6 +58,7 @@ module.exports = (sequelize) => {
             SannoUniversity: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
@@ -48,6 +67,7 @@ module.exports = (sequelize) => {
             UzSWLUniversity: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
@@ -56,28 +76,33 @@ module.exports = (sequelize) => {
             CoWork: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
+                allowNull: false,
                 validate: {
                     min: 0,
                     max: 100
                 }
             },
             AllMarks: {
-                type: DataTypes.INTEGER,
-                get() {
-                    const Attendee = this.getDataValue('Attendee') ?? 0
-                    const ItCourse = this.getDataValue('ItCourse') ?? 0
-                    const JapanLanguage = this.getDataValue('JapanLanguage') ?? 0
-                    const SannoUniversity = this.getDataValue('SannoUniversity') ?? 0
-                    const UzSWLUniversity = this.getDataValue('UzSWLUniversity') ?? 0
-                    const CoWork = this.getDataValue('CoWork') ?? 0
-
-                    return +((Attendee + ItCourse + JapanLanguage + SannoUniversity + UzSWLUniversity + CoWork) / 6).toFixed(2)
+                type: DataTypes.DECIMAL(5, 2),
+                defaultValue: 0,
+                allowNull: false,
+                validate: {
+                    min: 0,
+                    max: 100
                 }
             }
         }, {
             sequelize,
             timestamps: false,
             modelName: 'UniversityPercentages'
+        })
+
+        UniversityPercentage.beforeCreate((model) => {
+            model.AllMarks = calculateAllMarks(model)
+        })
+
+        UniversityPercentage.beforeUpdate((model) => {
+            model.AllMarks = calculateAllMarks(model)
         })
 
         UniversityPercentage.associate = (models) => {

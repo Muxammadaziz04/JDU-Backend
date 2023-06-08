@@ -28,6 +28,24 @@ class StudentController {
             console.log(error);
         }
     }
+
+    async deleteStudent(req, res) {
+        try {
+            const student = await StudentServices.delete(req.params.id)
+            res.status(204).send('')
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async findById(req, res) {
+        try {
+            const student = await StudentServices.findByPk(req.params.id)
+            res.status(200).send(student)
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 module.exports = StudentController
