@@ -7,6 +7,7 @@ const lessonModel = require('../Lessons/lesson.model.js');
 const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
 const { Op } = require('sequelize');
+const logger = require('../../services/logger.service.js');
 
 class StudentServices {
     constructor(sequelize) {
@@ -92,23 +93,34 @@ class StudentServices {
         try {
             const student = await this.models.Students.update(body, { where: { id }, returning: true })
 
-            if (Array.isArray(body?.JapanLanguageTests)) {
-                body.forEach((test) => {
-                    this.models.JapanLanguageTests.update(test, { where: { id: test.id } })
-                })
+            if (Array.isArray(body?.japanLanguageTests)) {
+                await Promise.all(body?.japanLanguageTests?.map(async (test) => {
+                    try {
+                        await this.models.JapanLanguageTests.update(test, { where: { id: test.id || null } })
+                    } catch (error) {
+                        logger.error(error.message)
+                    }
+                }))
             }
             if (body?.itQualification) {
-                this.models.ItQualifications.update(body.itQualification, { where: { [Op.or]: [{ id: body?.itQualification?.id }, { studentId: id }] } })
+                const [_, itQualification] = await this.models.ItQualifications.update(body.itQualification, { where: { studentId: id }, returning: true })
                 if (Array.isArray(body?.itQualification?.skills)) {
-                    body?.itQualification?.skills.forEach(skill => {
-                        this.models.ItQualificationResults.update(skill, { where: { [Op.or]: [{ id: skill.id }, { ItQualificationId: body?.itQualification?.id }] } })
-                    })
+                    await Promise.all(body?.itQualification?.skills?.map(async skill => {
+                        try {
+                            const studentSkill = await this.models.ItQualificationResults.update(skill, { where: { id: skill.id || null }, returning: true })
+                            if(studentSkill?.[0] === 0 && skill.skillId && skill.procent) {
+                                this.models.ItQualificationResults.create({...skill, ItQualificationId: itQualification?.[0]?.id})
+                            }
+                        } catch (error) {
+                            logger.error(error.message)
+                        }
+                    }))
                 }
             }
             if (body?.universityPercentage) {
-                this.models.UniversityPercentages.update(body?.universityPercentage, { where: { [Op.or]: [{ id: body?.universityPercentage?.id }, { studentId: id }] } })
+                await this.models.UniversityPercentages.update(body?.universityPercentage, { where: { studentId: id } })
             }
-            
+
             return student
         } catch (error) {
             return SequelizeError(error)
