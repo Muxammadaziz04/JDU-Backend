@@ -1,21 +1,22 @@
-const {  } = require('../../services/.service.js');
+const { sequelize } = require('../../services/sequelize.service.js');
 const StudentModel = require('./student.model.js')
-const Error = require('../../errors/.error.js');
+const SequelizeError = require('../../errors/sequelize.error.js');
 const JapanLanguageTestModel = require('../JapanLanguageTests/JapanLanguageTest.model.js');
 const ItQualificationModel = require('../ItQualifications/ItQualification.model.js');
 const lessonModel = require('../Lessons/lesson.model.js');
 const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
+const { Op } = require('sequelize');
 
 class StudentServices {
-    constructor() {
-        StudentModel();
-        JapanLanguageTestModel();
-        ItQualificationModel();
-        lessonModel();
-        semesterModel(); 
-        UniversityPercentageModel();
-        this.models = .models;
+    constructor(sequelize) {
+        StudentModel(sequelize);
+        JapanLanguageTestModel(sequelize);
+        ItQualificationModel(sequelize);
+        lessonModel(sequelize);
+        semesterModel(sequelize);
+        UniversityPercentageModel(sequelize);
+        this.models = sequelize.models;
     }
 
     async create(body) {
@@ -39,7 +40,7 @@ class StudentServices {
 
             return student
         } catch (error) {
-            return Error(error)
+            return SequelizeError(error)
         }
     }
 
@@ -48,7 +49,7 @@ class StudentServices {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
                 where: { isDeleted: false },
-                // order: [['courseNumber', 'DESC']],
+                // order: [['universityPercentage', 'AllMarks', 'ASC']],
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
@@ -80,26 +81,37 @@ class StudentServices {
                 offset: (page - 1) * limit,
                 limit,
             })
-            
+
             return students
         } catch (error) {
-            return Error(error)
+            return SequelizeError(error)
         }
     }
 
     async update(id, body) {
         try {
-            let student = await this.models.Students.update(body, {
-                where: { id },
-                include: [
-                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests' }
-                ],
-                returning: true
-            })
+            const student = await this.models.Students.update(body, { where: { id }, returning: true })
 
+            if (Array.isArray(body?.JapanLanguageTests)) {
+                body.forEach((test) => {
+                    this.models.JapanLanguageTests.update(test, { where: { id: test.id } })
+                })
+            }
+            if (body?.itQualification) {
+                this.models.ItQualifications.update(body.itQualification, { where: { [Op.or]: [{ id: body?.itQualification?.id }, { studentId: id }] } })
+                if (Array.isArray(body?.itQualification?.skills)) {
+                    body?.itQualification?.skills.forEach(skill => {
+                        this.models.ItQualificationResults.update(skill, { where: { [Op.or]: [{ id: skill.id }, { ItQualificationId: body?.itQualification?.id }] } })
+                    })
+                }
+            }
+            if (body?.universityPercentage) {
+                this.models.UniversityPercentages.update(body?.universityPercentage, { where: { [Op.or]: [{ id: body?.universityPercentage?.id }, { studentId: id }] } })
+            }
+            
             return student
         } catch (error) {
-            return Error(error)
+            return SequelizeError(error)
         }
     }
 
@@ -108,7 +120,7 @@ class StudentServices {
             const student = this.models.Students.update({ isDeleted: true }, { where: { id } })
             return student
         } catch (error) {
-            return Error(error)
+            return SequelizeError(error)
         }
     }
 
@@ -117,9 +129,9 @@ class StudentServices {
             const student = await this.models.Students.findByPk(id)
             return student?.isDeleted ? {} : student
         } catch (error) {
-            return Error(error)
+            return SequelizeError(error)
         }
     }
 }
 
-module.exports = new StudentServices()
+module.exports = new StudentServices(sequelize)
