@@ -27,6 +27,13 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true
             },
+            email: {
+                type: DataTypes.STRING,
+                unique: true,
+                validate: {
+                    isEmail: true
+                }
+            },
             password: {
                 type: DataTypes.STRING,
                 allowNull: false
@@ -35,9 +42,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            yearOfAdmission: {
+            courseNumber: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                validate: {
+                    min: 1
+                }
             },
             avatar: {
                 type: DataTypes.STRING,

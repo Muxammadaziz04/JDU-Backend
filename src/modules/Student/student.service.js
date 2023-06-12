@@ -6,7 +6,6 @@ const ItQualificationModel = require('../ItQualifications/ItQualification.model.
 const lessonModel = require('../Lessons/lesson.model.js');
 const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
-const { Op } = require('sequelize');
 const logger = require('../../services/logger.service.js');
 
 class StudentServices {
@@ -91,7 +90,8 @@ class StudentServices {
 
     async update(id, body) {
         try {
-            const student = await this.models.Students.update(body, { where: { id }, returning: true })
+            const [_, student] = await this.models.Students.update(body, { where: { id }, returning: true })
+            if(student?.length === 0) return SequelizeError(new Error('Student not found'))
 
             if (Array.isArray(body?.japanLanguageTests)) {
                 await Promise.all(body?.japanLanguageTests?.map(async (test) => {
@@ -138,7 +138,36 @@ class StudentServices {
 
     async findByPk(id) {
         try {
-            const student = await this.models.Students.findByPk(id)
+            const student = await this.models.Students.findByPk(id, {
+                include: [
+                    { model: this.models.Specialisations, as: 'specialisation' },
+                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
+                    { model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: { exclude: ['studentId'] } },
+                    {
+                        model: this.models.ItQualifications, as: 'itQualification',
+                        attributes: { exclude: ['studentId', 'id'] },
+                        include: [
+                            {
+                                model: this.models.ItQualificationResults, as: 'skills',
+                                attributes: { exclude: ['ItQualificationId', 'skillId'] },
+                                include: [{ model: this.models.Skills, as: 'skill' }]
+                            }
+                        ]
+                    },
+                    {
+                        model: this.models.Lessons, as: 'lessons',
+                        attributes: { exclude: ['studentId'] },
+                        include: [
+                            {
+                                model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'] }, include: [
+                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
+                                ]
+                            }
+                        ],
+                    }
+                ],
+                attributes: { exclude: ['specialisationId', 'password', 'isDeleted',] },
+            })
             return student?.isDeleted ? {} : student
         } catch (error) {
             return SequelizeError(error)
