@@ -39,14 +39,14 @@ module.exports = (sequelize) => {
             modelName: 'LessonResults',
             hooks: {
                 beforeCreate: (model) => {
-                    const value = model.dataValues
-                    if(value.status === 'Completed') {
+                    const values = model.dataValues
+                    if(values.status === 'Completed') {
                         model.credit = 0
                     }
                 },
                 beforeUpdate: (model) => {
-                    const value = model.dataValues
-                    if(value.status === 'Completed') {
+                    const values = model.dataValues
+                    if(values.status === 'Completed') {
                         model.credit = 0
                     }
                 }

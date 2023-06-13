@@ -33,9 +33,23 @@ const studentSchema = Joi.object({
         SannoUniversity: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
         UzSWLUniversity: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100)),
         CoWork: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(0).max(100))
-    })
+    }),
+    lessons: Joi.object()
+})
+
+const recruitorSchema = Joi.object({
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    loginId: Joi.string().required(),
+    password: Joi.string().required(),
+    companyName: Joi.string().required(),
+    phoneNumber: Joi.string().required(),
+    email: Joi.string().email().required(),
+    bio: Joi.string(),
+    specialisation: Joi.string().required()
 })
 
 module.exports = {
-    studentSchema
+    studentSchema,
+    recruitorSchema
 }

@@ -1,16 +1,26 @@
 const { Op } = require("sequelize")
+const SequelizeError = require("../../errors/sequelize.error")
 const { sequelize } = require("../../services/sequelize.service")
-const AuthModel = require("./auth.model")
 
 class AuthService {
     constructor(sequelize) {
-        AuthModel(sequelize)
         this.models = sequelize.models
     }
 
     async login({ loginId, password }) {
-        const user = await this.models.Auth.findOne({ where: { [Op.and]: [{ loginId }, { password }] } })
-        return user
+        try {
+            const student = await this.models.Students.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            if (student) {
+                return student
+            }
+
+            const recruitor = await this.models.Recruitors.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            if (recruitor) {
+                return recruitor
+            }
+        } catch (error) {
+            return SequelizeError(error)
+        }
     }
 }
 

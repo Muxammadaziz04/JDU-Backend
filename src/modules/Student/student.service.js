@@ -22,6 +22,7 @@ class StudentServices {
     async create(body) {
         try {
             const student = await this.models.Students.create(body, {
+                individualHooks: true,
                 include: [
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests' },
                     { model: this.models.UniversityPercentages, as: 'universityPercentage', individualHooks: true },
@@ -90,7 +91,7 @@ class StudentServices {
 
     async update(id, body) {
         try {
-            const [_, student] = await this.models.Students.update(body, { where: { id }, returning: true })
+            const [_, student] = await this.models.Students.update(body, { where: { id }, returning: true, individualHooks: true })
             if(student?.length === 0) return SequelizeError(new Error('Student not found'))
 
             if (Array.isArray(body?.japanLanguageTests)) {

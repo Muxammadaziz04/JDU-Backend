@@ -1,3 +1,4 @@
+const sha256 = require('sha256')
 const { Model, Sequelize, DataTypes } = require("sequelize");
 const logger = require("../../services/logger.service");
 const { validateLinks } = require("../../utils/modelValidation");
@@ -27,16 +28,16 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true
             },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
             email: {
                 type: DataTypes.STRING,
                 unique: true,
                 validate: {
                     isEmail: true
                 }
-            },
-            password: {
-                type: DataTypes.STRING,
-                allowNull: false
             },
             groupNumber: {
                 type: DataTypes.STRING,
@@ -48,6 +49,11 @@ module.exports = (sequelize) => {
                 validate: {
                     min: 1
                 }
+            },
+            role: {
+                type: DataTypes.ENUM('student'),
+                allowNull: false,
+                defaultValue: 'student'
             },
             avatar: {
                 type: DataTypes.STRING,
@@ -80,7 +86,17 @@ module.exports = (sequelize) => {
         }, {
             sequelize,
             modelName: 'Students',
-        })
+            hooks: {
+                beforeCreate: (model) => {
+                    const values = model.dataValues
+                    model.password = sha256(values.password)
+                },
+                beforeUpdate: (model) => {
+                    const values = model.dataValues
+                    model.password = sha256(values.password)
+                }
+            }
+        });
 
         Student.associate = (models) => {
             models.Students.belongsTo(models.Specialisations, {

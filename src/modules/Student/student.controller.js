@@ -22,7 +22,7 @@ class StudentController {
 
     async updateStudent(req, res) {
         try {
-            const student = await StudentServices.update(req.params.id, req.body  )
+            const student = await StudentServices.update(req.params.id, req.body)
             res.status(203).send(student)
         } catch (error) {
             console.log(error);
