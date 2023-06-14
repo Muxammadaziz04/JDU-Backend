@@ -138,6 +138,11 @@ module.exports = (sequelize) => {
                 as: 'universityPercentage',
                 onDelete: 'cascade'
             })
+
+            models.Students.belongsToMany(models.Recruitors, {
+                through: models.SelectedStudents,
+                timestamps: false
+            })
         }
 
         return Student

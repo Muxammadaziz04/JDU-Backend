@@ -8,10 +8,19 @@ class AuthController {
         try {
             const body = req.body
             const user = await AuthService.login({ loginId: body.loginId, password: sha256(body.password) })
-            res.status(200).send({
-                user,
-                token: jwt.sign(JSON.stringify(user))
-            })
+            if (!user || user?.error) {
+                res.status(409).send({
+                    error: true,
+                    status: 409,
+                    message: 'Incorrect email or password'
+                })
+            } else {
+                const token = jwt.sign(JSON.stringify(user))
+                res
+                    .status(200)
+                    .cookie('access_token', token, { httpOnly: true })
+                    .send({ user, token })
+            }
         } catch (error) {
             logger.error(error.message)
         }

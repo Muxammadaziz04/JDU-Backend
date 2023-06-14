@@ -64,6 +64,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.ENUM('recruitor'),
                 allowNull: false,
                 defaultValue: 'recruitor'
+            },
+            isDeleted: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         }, {
             sequelize,
@@ -75,11 +80,29 @@ module.exports = (sequelize) => {
                 },
                 beforeUpdate: (model) => {
                     const values = model.dataValues
-                    model.password = sha256(values.password)
+                    if(model._previousDataValues.password !== values.password){
+                        model.password = sha256(values.password)
+                    }
                 }
             }
         })
 
+        sequelize.define('SelectedStudents', {
+            StudentId: DataTypes.UUIDV4,
+            RecruitorId: DataTypes.UUIDV4
+        }, { 
+            timestamps: false, 
+            modelName: 'SelectedStudents' 
+        })
+
+        Recruitor.associate = (models) => {
+            models.Recruitors.belongsToMany(models.Students, {
+                through: models.SelectedStudents,
+                as: 'students'
+            })
+        }
+
+        return Recruitor
     } catch (error) {
         logger.error(error.message)
     }

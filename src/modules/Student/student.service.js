@@ -51,6 +51,12 @@ class StudentServices {
                 distinct: true,
                 where: { isDeleted: false },
                 // order: [['universityPercentage', 'AllMarks', 'ASC']],
+                attributes: {
+                    exclude: ['specialisationId', 'password', 'isDeleted'],
+                    include: [
+                        [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '6ea73cb5-0fcc-4d91-a357-48cf856c587e'))`), 'isSelected']
+                    ]
+                },
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
@@ -78,7 +84,6 @@ class StudentServices {
                         ],
                     }
                 ],
-                attributes: { exclude: ['specialisationId', 'password', 'isDeleted',] },
                 offset: (page - 1) * limit,
                 limit,
             })
@@ -92,7 +97,7 @@ class StudentServices {
     async update(id, body) {
         try {
             const [_, student] = await this.models.Students.update(body, { where: { id }, returning: true, individualHooks: true })
-            if(student?.length === 0) return SequelizeError(new Error('Student not found'))
+            if (student?.length === 0) return SequelizeError(new Error('Student not found'))
 
             if (Array.isArray(body?.japanLanguageTests)) {
                 await Promise.all(body?.japanLanguageTests?.map(async (test) => {
@@ -109,8 +114,8 @@ class StudentServices {
                     await Promise.all(body?.itQualification?.skills?.map(async skill => {
                         try {
                             const studentSkill = await this.models.ItQualificationResults.update(skill, { where: { id: skill.id || null }, returning: true })
-                            if(studentSkill?.[0] === 0 && skill.skillId && skill.procent) {
-                                this.models.ItQualificationResults.create({...skill, ItQualificationId: itQualification?.[0]?.id})
+                            if (studentSkill?.[0] === 0 && skill.skillId && skill.procent) {
+                                this.models.ItQualificationResults.create({ ...skill, ItQualificationId: itQualification?.[0]?.id })
                             }
                         } catch (error) {
                             logger.error(error.message)
@@ -170,6 +175,21 @@ class StudentServices {
                 attributes: { exclude: ['specialisationId', 'password', 'isDeleted',] },
             })
             return student?.isDeleted ? {} : student
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
+    async getTopStudents({ page = 1, limit = 10 }) {
+        try {
+            const topStudents = await this.models.Students.findAndCountAll({
+                attributes: ['id', 'firstName', 'lastName', 'avatar'],
+                order: [['universityPercentage', 'AllMarks', 'DESC']],
+                include: [{ model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: ['AllMarks'] }],
+                offset: (page - 1) * limit,
+                limit,
+            })
+            return topStudents
         } catch (error) {
             return SequelizeError(error)
         }

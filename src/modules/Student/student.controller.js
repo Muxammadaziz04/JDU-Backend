@@ -46,6 +46,15 @@ class StudentController {
             console.log(error);
         }
     }
+
+    async getTopStudents(req, res) {
+        try {
+            const topStudents = await StudentServices.getTopStudents({page: req.query?.page, limit: req.query?.limit})
+            res.status(200).send(topStudents)
+        } catch (error) {
+            
+        }
+    }
 }
 
 module.exports = StudentController
