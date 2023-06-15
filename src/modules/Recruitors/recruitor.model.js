@@ -1,6 +1,7 @@
 const sha256 = require('sha256')
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const logger = require("../../services/logger.service");
+const { roles } = require('../../constants/server.constants');
 
 class Recruitor extends Model { }
 
@@ -23,7 +24,15 @@ module.exports = (sequelize) => {
             loginId: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
+                validate: {
+                    isUnique: async function (value) {
+                        const recruitor = await sequelize.models.Students.findOne({ where: { loginId: value } })
+                        if (recruitor) {
+                            throw new Error('loginId must be unique')
+                        }
+                    }
+                }
             },
             password: {
                 type: DataTypes.STRING,
@@ -61,9 +70,9 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT
             },
             role: {
-                type: DataTypes.ENUM('recruitor'),
+                type: DataTypes.ENUM(roles.RECRUITOR),
                 allowNull: false,
-                defaultValue: 'recruitor'
+                defaultValue: roles.RECRUITOR
             },
             isDeleted: {
                 type: DataTypes.BOOLEAN,
@@ -80,7 +89,7 @@ module.exports = (sequelize) => {
                 },
                 beforeUpdate: (model) => {
                     const values = model.dataValues
-                    if(model._previousDataValues.password !== values.password){
+                    if (model._previousDataValues.password !== values.password) {
                         model.password = sha256(values.password)
                     }
                 }
@@ -90,9 +99,9 @@ module.exports = (sequelize) => {
         sequelize.define('SelectedStudents', {
             StudentId: DataTypes.UUIDV4,
             RecruitorId: DataTypes.UUIDV4
-        }, { 
-            timestamps: false, 
-            modelName: 'SelectedStudents' 
+        }, {
+            timestamps: false,
+            modelName: 'SelectedStudents'
         })
 
         Recruitor.associate = (models) => {

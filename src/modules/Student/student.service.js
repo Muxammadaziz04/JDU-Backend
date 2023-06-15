@@ -7,6 +7,7 @@ const lessonModel = require('../Lessons/lesson.model.js');
 const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
 const logger = require('../../services/logger.service.js');
+const { roles } = require('../../constants/server.constants.js');
 
 class StudentServices {
     constructor(sequelize) {
@@ -45,22 +46,21 @@ class StudentServices {
         }
     }
 
-    async getAll({ page = 1, limit = 10 }) {
+    async getAll({ page = 1, limit = 10, role, userId = '' }) {
         try {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
                 where: { isDeleted: false },
-                // order: [['universityPercentage', 'AllMarks', 'ASC']],
                 attributes: {
-                    exclude: ['specialisationId', 'password', 'isDeleted'],
-                    include: [
-                        [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '6ea73cb5-0fcc-4d91-a357-48cf856c587e'))`), 'isSelected']
-                    ]
+                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'courseNumber', 'role', 'bio', 'images', 'videos', 'createdAt', 'updatedAt'],
+                    include: role === roles.RECRUITOR ? [
+                        [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '${userId}'))`), 'isSelected']
+                    ] : []
                 },
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
-                    { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
-                    { model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: { exclude: ['studentId'] } },
+                    // { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
+                    { model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: ['AllMarks'] },
                     {
                         model: this.models.ItQualifications, as: 'itQualification',
                         attributes: { exclude: ['studentId', 'id'] },
@@ -72,17 +72,17 @@ class StudentServices {
                             }
                         ]
                     },
-                    {
-                        model: this.models.Lessons, as: 'lessons',
-                        attributes: { exclude: ['studentId'] },
-                        include: [
-                            {
-                                model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'] }, include: [
-                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
-                                ]
-                            }
-                        ],
-                    }
+                    // {
+                    //     model: this.models.Lessons, as: 'lessons',
+                    //     attributes: { exclude: ['studentId'] },
+                    //     include: [
+                    //         {
+                    //             model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'] }, include: [
+                    //                 { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
+                    //             ]
+                    //         }
+                    //     ],
+                    // }
                 ],
                 offset: (page - 1) * limit,
                 limit,
@@ -92,7 +92,7 @@ class StudentServices {
         } catch (error) {
             return SequelizeError(error)
         }
-    }
+    }   
 
     async update(id, body) {
         try {

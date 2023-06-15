@@ -18,6 +18,11 @@ class AuthService {
             if (recruitor) {
                 return recruitor
             }
+
+            const decan = await this.models.Decan.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            if (decan) {
+                return decan
+            }
         } catch (error) {
             return SequelizeError(error)
         }

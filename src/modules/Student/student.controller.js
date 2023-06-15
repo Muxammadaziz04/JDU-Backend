@@ -4,7 +4,7 @@ class StudentController {
     async getStudents(req, res) {
         try {
             const { page, limit } = req.query
-            const students = await StudentServices.getAll({ page, limit })
+            const students = await StudentServices.getAll({ page, limit, role: req.role, userId: req.user?.id })
             res.status(200).send(students)
         } catch (error) {
 
@@ -49,10 +49,10 @@ class StudentController {
 
     async getTopStudents(req, res) {
         try {
-            const topStudents = await StudentServices.getTopStudents({page: req.query?.page, limit: req.query?.limit})
+            const topStudents = await StudentServices.getTopStudents({ page: req.query?.page, limit: req.query?.limit })
             res.status(200).send(topStudents)
         } catch (error) {
-            
+
         }
     }
 }

@@ -65,7 +65,7 @@ class RecruitorController {
 
     async selectStudent(req, res) {
         try {
-            const selectedStudent = await RecruitorService.selectStudent({ StudentId: req.params?.id, RecruitorId: '8fb771a4-cb65-4dc3-a04a-8273a7653236' })
+            const selectedStudent = await RecruitorService.selectStudent({ StudentId: req.params?.id, RecruitorId: req.user?.id })
             res.status(201).send(selectedStudent)
         } catch (error) {
             logger.error(error.message)
@@ -74,7 +74,7 @@ class RecruitorController {
 
     async removeSelectedStudent(req, res) {
         try {
-            const removedStudent = await RecruitorService.removeSelectedStudent({ StudentId: req.params?.id, RecruitorId: '8fb771a4-cb65-4dc3-a04a-8273a7653236' })
+            const removedStudent = await RecruitorService.removeSelectedStudent({ StudentId: req.params?.id, RecruitorId: req.user?.id })
             res.status(203).send('removedStudent')
         } catch (error) {
             logger.error(error.message)
@@ -83,7 +83,7 @@ class RecruitorController {
 
     async getSelectedStudents(req, res) {
         try {
-            const students = await RecruitorService.getSelectedStudents('8fb771a4-cb65-4dc3-a04a-8273a7653236')
+            const students = await RecruitorService.getSelectedStudents(req.user?.id)
             res.status(200).send(students)
         } catch (error) {
             logger.error(error.message)

@@ -1,4 +1,6 @@
 const router = require('express').Router()
+const { roles } = require('../constants/server.constants')
+const chechPermissionMiddleware = require('../middlewares/checkPermission.middleware')
 const validationMiddleware = require('../middlewares/validation.middleware')
 const RecruitorController = require('../modules/Recruitors/recruitor.controller')
 const { recruitorSchema } = require('../utils/schema')

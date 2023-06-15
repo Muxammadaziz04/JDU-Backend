@@ -1,7 +1,8 @@
 const sha256 = require('sha256')
-const { Model, Sequelize, DataTypes } = require("sequelize");
+const { Model, Sequelize, DataTypes, Op } = require("sequelize");
 const logger = require("../../services/logger.service");
 const { validateLinks } = require("../../utils/modelValidation");
+const { roles } = require('../../constants/server.constants');
 
 class Student extends Model { }
 
@@ -26,7 +27,15 @@ module.exports = (sequelize) => {
             loginId: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
+                validate: {
+                    isUnique: async function (value) {
+                        const recruitor = await sequelize.models.Recruitors.findOne({ where: { loginId: value } })
+                        if (recruitor) {
+                            throw new Error('loginId must be unique')
+                        }
+                    }
+                }
             },
             password: {
                 type: DataTypes.STRING,
@@ -51,9 +60,9 @@ module.exports = (sequelize) => {
                 }
             },
             role: {
-                type: DataTypes.ENUM('student'),
+                type: DataTypes.ENUM(roles.STUDENT),
                 allowNull: false,
-                defaultValue: 'student'
+                defaultValue: roles.STUDENT
             },
             avatar: {
                 type: DataTypes.STRING,
@@ -97,6 +106,24 @@ module.exports = (sequelize) => {
                 }
             }
         });
+
+        // sequelize.queryInterface.addIndex('Students', ['loginId'], { unique: true })
+
+        // sequelize.queryInterface.addConstraint('Students', {
+        //     type: 'unique',
+        //     fields: ['loginId'],
+        // });
+
+        //   // Add check constraint to ensure the username field of Post model is not already used in User model
+        //   sequelize.queryInterface.addConstraint('Students', {
+        //     type: 'check',
+        //     name: 'loginId_unique_across_models',
+        //     where: {
+        //       loginId: {
+        //         [Op.notIn]: sequelize.literal(`(SELECT "loginId" FROM "Recruitors")`),
+        //       },
+        //     },
+        //   });
 
         Student.associate = (models) => {
             models.Students.belongsTo(models.Specialisations, {

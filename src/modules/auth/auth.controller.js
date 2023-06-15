@@ -6,8 +6,9 @@ const AuthService = require("./auth.service");
 class AuthController {
     async login(req, res) {
         try {
-            const body = req.body
-            const user = await AuthService.login({ loginId: body.loginId, password: sha256(body.password) })
+            const { loginId, password } = req.body
+            const user = await AuthService.login({ loginId, password: sha256(password) })
+
             if (!user || user?.error) {
                 res.status(409).send({
                     error: true,
@@ -19,7 +20,7 @@ class AuthController {
                 res
                     .status(200)
                     .cookie('access_token', token, { httpOnly: true })
-                    .send({ user, token })
+                    .send({ user, success: true })
             }
         } catch (error) {
             logger.error(error.message)

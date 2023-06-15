@@ -3,7 +3,8 @@ const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const { connectToDB } = require('./services/sequelize.service.js')
 const { PORT } = require('./constants/server.constants')
-const combineRoutes = require('./routers/index.js')
+const combineRoutes = require('./routers/index.js');
+const AuthMiddleware = require('./middlewares/auth.middleware.js');
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
+app.use(AuthMiddleware)
 
 combineRoutes(app)
 

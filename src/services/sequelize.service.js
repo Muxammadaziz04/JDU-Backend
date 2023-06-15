@@ -8,7 +8,7 @@ const connectToDB = async () => {
     try {
         await sequelize
             .authenticate()
-            .then(() => {
+            .then(async() => {
                 logger.info('DB connected!')
                 console.log(sequelize.models);
                 Object.keys(sequelize.models).forEach(model => {
