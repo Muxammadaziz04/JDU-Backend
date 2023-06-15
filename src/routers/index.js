@@ -4,6 +4,7 @@ const skillRouter = require('./skill.router.js')
 const lessonResult = require('./lessonResult.router.js')
 const auth = require('./auth.router.js')
 const recruitor = require('./recruitor.router.js')
+const decan = require('./decan.router.js')
 
 const routes = [
     studentRouter,
@@ -11,7 +12,8 @@ const routes = [
     skillRouter,
     lessonResult,
     auth,
-    recruitor
+    recruitor,
+    decan
 ]
 
 const combineRoutes = (app) => {

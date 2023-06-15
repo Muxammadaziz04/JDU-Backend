@@ -4,4 +4,4 @@ const Controller = new DecanController()
 
 router.put('/decan/:id', Controller.update)
 
-module.exports = Controller
+module.exports = router
