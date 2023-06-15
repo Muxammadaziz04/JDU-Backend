@@ -1,4 +1,5 @@
-const sha256 = require('sha256')
+const sha256 = require('sha256');
+const ExpressError = require('../../errors/express.error.js');
 const jwt = require('../../services/jwt.service.js')
 const logger = require("../../services/logger.service");
 const AuthService = require("./auth.service");
@@ -10,11 +11,7 @@ class AuthController {
             const user = await AuthService.login({ loginId, password: sha256(password) })
 
             if (!user || user?.error) {
-                res.status(409).send({
-                    error: true,
-                    status: 409,
-                    message: 'Incorrect email or password'
-                })
+                res.status(409).send(new ExpressError('Incorrect email or password', 409))
             } else {
                 const token = jwt.sign(JSON.stringify(user))
                 res
