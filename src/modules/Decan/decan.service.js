@@ -1,7 +1,7 @@
 const sha256 = require('sha256')
 const SequelizeError = require("../../errors/sequelize.error")
 const { sequelize } = require("../../services/sequelize.service")
-const DecanModel = require("./Decan.model.js")
+const DecanModel = require("./decan.model.js")
 
 class DecanServices {
     constructor(sequelize) {
