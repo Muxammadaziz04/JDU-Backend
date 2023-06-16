@@ -10,8 +10,7 @@ const app = express()
 
 connectToDB()
 
-app.options("*", cors({ origin: 'http://localhost:3000', optionsSuccessStatus: 200 }));
-app.use(cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 }));
+app.use(cors({credentials: true, origin: true}));
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
