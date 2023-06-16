@@ -1,3 +1,4 @@
+const { defaultStudetnValue } = require('../../constants/student.constants.js')
 const StudentServices = require('./student.service.js')
 
 class StudentController {
@@ -13,7 +14,7 @@ class StudentController {
 
     async createStudent(req, res) {
         try {
-            const student = await StudentServices.create(req.body)
+            const student = await StudentServices.create({...defaultStudetnValue, ...req.body})
             res.status(201).send(student)
         } catch (error) {
             console.log(error);

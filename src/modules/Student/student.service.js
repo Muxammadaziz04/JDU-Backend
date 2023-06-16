@@ -162,11 +162,17 @@ class StudentServices {
                     },
                     {
                         model: this.models.Lessons, as: 'lessons',
-                        attributes: { exclude: ['studentId'] },
+                        attributes: { exclude: ['studentId'], include: [
+                            // [sequelize.literal(`(select s."allCredits" from "Lessons" as l join (select sum(credit) as "allCredits", sm.id, sm."lessonId" from "Semesters" as sm join "LessonResults" as r on sm.id = r."semesterId" group by sm.id) as s on s."lessonId" = l.id where s."lessonId" = "Lessons".id)`), 'summ']
+                        ] },
                         include: [
                             {
-                                model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'] }, include: [
-                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
+                                model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'], include: [
+                                    // [sequelize.literal(`(select sum(credit) from "Semesters" as s left join "LessonResults" as l on s.id = l."semesterId" where s.id = "Lessons".id group by s.id)`), 'all']
+                                ] }, 
+                                order: ['semesterNumber'],
+                                include: [
+                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }   
                                 ]
                             }
                         ],

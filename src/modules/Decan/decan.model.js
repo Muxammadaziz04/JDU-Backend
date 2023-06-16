@@ -23,11 +23,28 @@ module.exports = (sequelize) => {
             loginId: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
+                validate: {
+                    len: [6, 6],
+                    isUnique: async function (value) {
+                        const recruitor = await sequelize.models.Students.findOne({ where: { loginId: value } })
+                        if (recruitor) {
+                            throw new Error('loginId must be unique')
+                        }
+
+                        const student = await sequelize.models.Students.findOne({ where: { loginId: value } })
+                        if (student) {
+                            throw new Error('loginId must be unique')
+                        }
+                    }
+                }
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    len: 8,
+                }
             },
             email: {
                 type: DataTypes.STRING,

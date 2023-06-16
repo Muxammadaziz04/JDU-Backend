@@ -26,9 +26,15 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true,
                 validate: {
+                    len: [6, 6],
                     isUnique: async function (value) {
                         const recruitor = await sequelize.models.Students.findOne({ where: { loginId: value } })
                         if (recruitor) {
+                            throw new Error('loginId must be unique')
+                        }
+
+                        const decan = await sequelize.models.Decan.findOne({ where: { loginId: value } })
+                        if (decan) {
                             throw new Error('loginId must be unique')
                         }
                     }
@@ -36,7 +42,10 @@ module.exports = (sequelize) => {
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    len: 8,
+                }
             },
             firstName: {
                 type: DataTypes.STRING,

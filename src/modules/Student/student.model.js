@@ -29,9 +29,15 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true,
                 validate: {
+                    len: [6, 6],
                     isUnique: async function (value) {
                         const recruitor = await sequelize.models.Recruitors.findOne({ where: { loginId: value } })
                         if (recruitor) {
+                            throw new Error('loginId must be unique')
+                        }
+
+                        const decan = await sequelize.models.Decan.findOne({ where: { loginId: value } })
+                        if (decan) {
                             throw new Error('loginId must be unique')
                         }
                     }
@@ -39,7 +45,10 @@ module.exports = (sequelize) => {
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    len: 8,
+                }
             },
             email: {
                 type: DataTypes.STRING,
@@ -106,24 +115,6 @@ module.exports = (sequelize) => {
                 }
             }
         });
-
-        // sequelize.queryInterface.addIndex('Students', ['loginId'], { unique: true })
-
-        // sequelize.queryInterface.addConstraint('Students', {
-        //     type: 'unique',
-        //     fields: ['loginId'],
-        // });
-
-        //   // Add check constraint to ensure the username field of Post model is not already used in User model
-        //   sequelize.queryInterface.addConstraint('Students', {
-        //     type: 'check',
-        //     name: 'loginId_unique_across_models',
-        //     where: {
-        //       loginId: {
-        //         [Op.notIn]: sequelize.literal(`(SELECT "loginId" FROM "Recruitors")`),
-        //       },
-        //     },
-        //   });
 
         Student.associate = (models) => {
             models.Students.belongsTo(models.Specialisations, {
