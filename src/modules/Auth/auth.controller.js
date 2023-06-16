@@ -16,8 +16,8 @@ class AuthController {
                 const token = jwt.sign(JSON.stringify(user))
                 res
                     .status(200)
-                    .cookie('access_token', token, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' })
-                    .send({ user, success: true })
+                    // .cookie('access_token', token, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' })
+                    .send({ user, token, success: true })
             }
         } catch (error) {
             logger.error(error.message)
