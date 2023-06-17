@@ -37,6 +37,14 @@ module.exports = (sequelize) => {
                 },
                 as: 'category'
             })
+
+            models.News.hasMany(models.NewsLanguages, {
+                foreignKey: {
+                    name: 'newsId'
+                },
+                as: 'languages',
+                onDelete: 'cascade'
+            })
         }
 
         return News

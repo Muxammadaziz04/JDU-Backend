@@ -2,28 +2,36 @@ const SequelizeError = require("../../errors/sequelize.error")
 const { sequelize } = require("../../services/sequelize.service")
 const newsModel = require("./news.model")
 const { Op } = require("sequelize")
+const NewsLanguageModel = require("../NewsLanguage/NewsLanguage.model")
 
 class NewsServise {
     constructor(sequelize) {
         newsModel(sequelize)
+        NewsLanguageModel(sequelize)
         this.models = sequelize.models
     }
 
     async create(body) {
         try {
-            const news = await this.models.News.create(body)
+            const news = await this.models.News.create(body, {
+                include: [
+                    { model: this.models.NewsLanguages, as: 'languages' }
+                ]
+            })
             return news
         } catch (error) {
             return SequelizeError(error)
         }
     }
 
-    async getAll({ page = 1, limit = 10 }) {
+    async getAll({ page = 1, limit = 10, lang }) {
         try {
             const news = await this.models.News.findAndCountAll({
+                distinct: true,
                 attributes: { exclude: ['categoryId'] },
                 include: [
-                    { model: this.models.NewsCategories, as: 'category' }
+                    { model: this.models.NewsCategories, as: 'category' },
+                    { model: this.models.NewsLanguages, as: 'languages', attributes: { exclude: ['newsId'] }, where: { ...(lang && { lang }) } }
                 ],
                 order: [['publishDate', 'DESC']],
                 offset: (page - 1) * limit,
@@ -35,11 +43,11 @@ class NewsServise {
         }
     }
 
-    async getPublishedNews({ page = 1, limit = 10, categoryId = null }) {
-        console.log(categoryId);
+    async getPublishedNews({ page = 1, limit = 10, categoryId = null, lang }) {
         try {
             const currentDate = new Date();
             const news = await this.models.News.findAndCountAll({
+                distinct: true,
                 where: {
                     publishDate: {
                         [Op.lt]: currentDate
@@ -47,7 +55,8 @@ class NewsServise {
                     ...(categoryId && { categoryId })
                 },
                 include: [
-                    { model: this.models.NewsCategories, as: 'category' }
+                    { model: this.models.NewsCategories, as: 'category' },
+                    { model: this.models.NewsLanguages, as: 'languages', attributes: { exclude: ['newsId'] }, where: { ...(lang && { lang }) } }
                 ],
                 attributes: { exclude: ['categoryId'] },
                 order: [['publishDate', 'DESC']],
@@ -56,6 +65,25 @@ class NewsServise {
             })
 
             return news
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
+    async update(id, body) {
+        try {
+            const [_, news] = await this.models.News.update(body, { where: { id }, returning: true })
+            if (Array.isArray(body.languages)) {
+                body.languages.map(async lang => {
+                    const newsLanguage = await this.models.NewsLanguages.findOne({ where: { newsId: id, lang: lang.lang } })
+                    if(newsLanguage) {
+                        await this.models.NewsLanguages.update(lang, {where: {id: newsLanguage?.id}})
+                    } else {
+                        await this.models.NewsLanguages.create({...lang, newsId: id})
+                    }
+                })
+            }
+            return news?.[0]
         } catch (error) {
             return SequelizeError(error)
         }

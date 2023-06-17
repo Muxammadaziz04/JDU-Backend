@@ -6,7 +6,8 @@ const constants = {
         RECRUITOR: 'recruitor',
         STUDENT: 'student',
         DECAN: 'decan'
-    }
+    },
+    languages: ['uz', 'jp', 'en']
 }
 
 module.exports = constants

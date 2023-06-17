@@ -1,8 +1,11 @@
 const sha256 = require('sha256');
+const crypto = require('crypto')
 const ExpressError = require('../../errors/express.error.js');
 const jwt = require('../../services/jwt.service.js')
 const logger = require("../../services/logger.service");
 const AuthService = require("./auth.service");
+const sendEmail = require('../../services/email.service.js');
+const { resetPasswordTemplate } = require('../../configs/email.config.js');
 
 class AuthController {
     async login(req, res) {
@@ -16,9 +19,73 @@ class AuthController {
                 const token = jwt.sign(JSON.stringify(user))
                 res
                     .status(200)
-                    .cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' })
-                    .send({ user, token, success: true })
+                    .cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none' })
+                    .send({ user, success: true })
             }
+        } catch (error) {
+            logger.error(error.message)
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            res.clearCookie('access_token')
+            res.status(203).send('Successful logout')
+        } catch (error) {
+            logger.error(error.message)
+        }
+    }
+
+    async resetPassword(req, res) {
+        try {
+            let user = await AuthService.getUserByEmail(req.body.email)
+            if (!user) return res.status(400).send(new ExpressError('user with given email doesn\'t exist', 400))
+            user = JSON.parse(JSON.stringify(user))
+
+            let token = await AuthService.getTokenByUserId(user?.id)
+            if (!token) {
+                token = await AuthService.createToken({
+                    userId: user?.id,
+                    token: crypto.randomBytes(32).toString("hex"),
+                })
+            }
+            token = JSON.parse(JSON.stringify(token))
+
+            const link = `${process.env.CLIENT_URL}/password-reset?token=${token.token}&id=${user?.id}`
+            await sendEmail({ to: req.body.email, subject: 'Reset password', html: resetPasswordTemplate(link) })
+            res.status(200).send({
+                success: true,
+                message: 'We emailed you a link to reset your password'
+            })
+        } catch (error) {
+            logger.error(error.message)
+        }
+    }
+
+    async changePassword(req, res) {
+        try {
+            let token = await AuthService.getTokenByUserId(req.body.userId)
+            if (!token || JSON.parse(JSON.stringify(token)).token !== req.body.token) {
+                return res.status(400).send(new ExpressError('Invalid link or expired', 400));
+            }
+
+            const user = await AuthService.changePassword(req.body.userId, sha256(req.body.password))
+            if(user) {
+                await AuthService.deleteToken(req.body.userId)
+            }
+            res.status(203).send({
+                success: true,
+                message: 'password successful changet'
+            })
+        } catch (error) {
+            logger.error(error.message)
+        }
+    }
+
+    async getMe(req, res) {
+        try {
+            const user = await AuthService.getMe(req.user.id)
+            res.send(200).send(user)
         } catch (error) {
             logger.error(error.message)
         }
