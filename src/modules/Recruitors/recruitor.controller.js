@@ -13,7 +13,7 @@ class RecruitorController {
 
     async getAll(req, res) {
         try {
-            const { page, limit } = req.params
+            const { page, limit } = req.query
             const recruitors = await RecruitorService.getAll({ page, limit })
             res.status(200).send(recruitors)
         } catch (error) {

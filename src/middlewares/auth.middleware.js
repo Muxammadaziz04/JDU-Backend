@@ -6,7 +6,7 @@ const AuthMiddleware = (req, res, next) => {
     try {
         if(publicRoutes.includes(req.url)) return next()
         
-        const token = req.cookies.access_token || req.headers.Authorization
+        const token = req.cookies.access_token || req.headers.authorization
         if (!token) {
             return res.status(401).send({ error: true, status: 401, message: 'Unauthorized' });
         }
