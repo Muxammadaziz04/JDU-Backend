@@ -84,8 +84,12 @@ class AuthController {
 
     async getMe(req, res) {
         try {
-            const user = await AuthService.getMe(req.user.id)
-            res.send(200).send(user)
+            const user = await AuthService.getById(req.user.id)
+            if(!user){
+                req.status(400).send(new ExpressError('user not found', 400))
+            } else {
+                res.status(200).send(user)
+            }
         } catch (error) {
             logger.error(error.message)
         }
