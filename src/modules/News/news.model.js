@@ -1,5 +1,6 @@
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const logger = require("../../services/logger.service");
+const validateLinks = require('../../utils/validateLinks.js')
 
 class News extends Model {}
 
@@ -21,7 +22,7 @@ module.exports = (sequelize) => {
             image: {
                 type: DataTypes.STRING,
                 validate: {
-                    isUrl: true
+                    validateLinks
                 }
             }
         }, {

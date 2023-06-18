@@ -1,6 +1,7 @@
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const { roles } = require("../../constants/server.constants");
 const logger = require("../../services/logger.service");
+const validateLinks = require("../../utils/validateLinks");
 
 class Decan extends Model {}
 
@@ -61,7 +62,7 @@ module.exports = (sequelize) => {
             avatar: {
                 type: DataTypes.STRING,
                 validate: {
-                    isUrl: true
+                    validateLinks
                 }
             },
         }, {

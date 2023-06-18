@@ -1,5 +1,6 @@
 const { Model, Sequelize, DataTypes } = require("sequelize");
 const logger = require("../../services/logger.service");
+const validateLinks = require("../../utils/validateLinks");
 
 class JapanLanguageTest extends Model {}
 
@@ -41,7 +42,7 @@ module.exports = (sequelize) => {
             sertificate: {
                 type: DataTypes.STRING,
                 validate: {
-                    isUrl: true
+                    validateLinks
                 }
             }
         }, {

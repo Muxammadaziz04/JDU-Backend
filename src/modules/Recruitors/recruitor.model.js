@@ -2,6 +2,7 @@ const sha256 = require('sha256')
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const logger = require("../../services/logger.service");
 const { roles } = require('../../constants/server.constants');
+const validateLinks = require('../../utils/validateLinks');
 
 class Recruitor extends Model { }
 
@@ -18,7 +19,7 @@ module.exports = (sequelize) => {
             avatar: {
                 type: DataTypes.STRING,
                 validate: {
-                    isUrl: true
+                    validateLinks
                 }
             },
             loginId: {

@@ -1,13 +1,21 @@
+const ExpressError = require("../../errors/express.error");
+const { uploadFile, removeFile } = require("../../services/file.service");
 const logger = require("../../services/logger.service");
 const RecruitorService = require("./recruitor.service");
 
 class RecruitorController {
-    async create(req, res) {
+    async create(req, res, next) {
         try {
+            const recruitorAvatar = await uploadFile({file: req.files?.avatar})
+            if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
             const recruitor = await RecruitorService.create(req.body)
+            if(recruitor?.error){
+                if(recruitorAvatar?.url) await removeFile(recruitorAvatar.url)
+                throw new ExpressError(recruitor.message, recruitor.status)
+            }
             res.status(201).send(recruitor)
         } catch (error) {
-            logger.error(error.message)
+            next(error)
         }
     }
 
