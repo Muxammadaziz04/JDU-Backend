@@ -16,11 +16,12 @@ class StudentController {
 
     async createStudent(req, res, next) {
         try {
-            const studentAvatar = await uploadFile({file: req.files?.avatar})
-            if(studentAvatar?.url) req.body.avatar = studentAvatar.url
-            const student = await StudentServices.create({...defaultStudetnValue, ...req.body})
-            if(student?.error){
-                if(studentAvatar?.url) await removeFile(studentAvatar.url)
+            const studentAvatar = await uploadFile({ file: req.files?.avatar })
+            if (studentAvatar?.url) req.body.avatar = studentAvatar.url
+            else throw new ExpressError('avatar is not uploaded')
+            const student = await StudentServices.create({ ...defaultStudetnValue, ...req.body })
+            if (student?.error) {
+                if (studentAvatar?.url) await removeFile(studentAvatar.url)
                 throw new ExpressError(student.message, student.status)
             }
             res.status(201).send(student)
@@ -29,12 +30,28 @@ class StudentController {
         }
     }
 
-    async updateStudent(req, res) {
+    async updateStudent(req, res, next) {
         try {
-            const student = await StudentServices.update(req.params.id, req.body)
+            const avatar = req.files?.avatar
+            const body = req.body
+
+            if (avatar) {
+                const studentAvatar = await uploadFile({ file: avatar })
+                if (studentAvatar.url) {
+                    body.avatar = studentAvatar.url
+                    const prevValues = await StudentServices.findByPk(req.params.id)
+                    prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
+                } else throw new ExpressError(studentAvatar?.message || 'avatar is not uploaded')
+            }
+
+            const student = await StudentServices.update(req.params.id, body)
+            if(student?.error) {
+                if (body.avatar) await removeFile(body.avatar)
+                throw new ExpressError(student.message, student.status)
+            }
             res.status(203).send(student)
         } catch (error) {
-            console.log(error);
+            next(error)
         }
     }
 

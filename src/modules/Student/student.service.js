@@ -96,8 +96,8 @@ class StudentServices {
 
     async update(id, body) {
         try {
-            const [_, student] = await this.models.Students.update(body, { where: { id }, returning: true, individualHooks: true })
-            if (student?.length === 0) return SequelizeError(new Error('Student not found'))
+            const [status, student] = await this.models.Students.update(body, { where: { id }, returning: true, individualHooks: true })
+            if (status === 0) return SequelizeError(new Error('Student not found'))
 
             if (Array.isArray(body?.japanLanguageTests)) {
                 await Promise.all(body?.japanLanguageTests?.map(async (test) => {
@@ -108,6 +108,7 @@ class StudentServices {
                     }
                 }))
             }
+
             if (body?.itQualification) {
                 const [_, itQualification] = await this.models.ItQualifications.update(body.itQualification, { where: { studentId: id }, returning: true })
                 if (Array.isArray(body?.itQualification?.skills)) {
@@ -123,11 +124,12 @@ class StudentServices {
                     }))
                 }
             }
+
             if (body?.universityPercentage) {
                 await this.models.UniversityPercentages.update(body?.universityPercentage, { where: { studentId: id } })
             }
 
-            return student
+            return student?.[0]
         } catch (error) {
             return SequelizeError(error)
         }

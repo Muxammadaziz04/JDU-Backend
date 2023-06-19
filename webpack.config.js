@@ -35,6 +35,9 @@ module.exports = {
     resolve: {
         extensions: ['.js']
     },
+    performance: {
+        hints: false
+    },
     plugins: [
         new webpack.DefinePlugin({
             "process.env": JSON.stringify(process.env)

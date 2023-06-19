@@ -8,7 +8,7 @@ const api = axios.create({ baseURL: process.env.STORAGE_URL })
 
 const uploadFile = async ({ file, folderName = '' }) => {
     try {
-        if(!file) return
+        if (!file) return {}
 
         const fd = new FormData()
         folderName && fd.append('folderName', folderName)
@@ -23,7 +23,6 @@ const uploadFile = async ({ file, folderName = '' }) => {
             fd.append('video', file?.data, file?.name)
         }
 
-
         const res = await api.post(url, fd, { ...fd.getHeaders() })
         return res?.data
     } catch (error) {
@@ -33,7 +32,7 @@ const uploadFile = async ({ file, folderName = '' }) => {
 
 const removeFile = async (url) => {
     try {
-        if(!url) return new ExpressError('URL is not found', 400)
+        if (!url) return new ExpressError('URL is not found', 400)
 
         const expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
         const regex = new RegExp(expression);
