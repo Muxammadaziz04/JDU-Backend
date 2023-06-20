@@ -46,6 +46,7 @@ const recruitorSchema = Joi.object({
     phoneNumber: Joi.string().required(),
     email: Joi.string().email().required(),
     bio: Joi.string(),
+    avatar: Joi.string().uri(),
     specialisation: Joi.string().required()
 })
 
