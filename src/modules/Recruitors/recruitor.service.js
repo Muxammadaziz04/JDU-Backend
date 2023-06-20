@@ -22,6 +22,7 @@ class RecruitorService {
         try {
             const recruitors = await this.models.Recruitors.findAndCountAll({
                 where: { isDeleted: false },
+                order: [['createdAt', 'DESC']],
                 attributes: { exclude: ['password', 'isDeleted'] },
                 offset: (page - 1) * limit,
                 limit,

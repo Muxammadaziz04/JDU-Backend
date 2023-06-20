@@ -17,12 +17,15 @@ class StudentController {
 
     async createStudent(req, res, next) {
         try {
-            const studentAvatar = await uploadFile({ file: req.files?.avatar })
-            if (studentAvatar?.url) req.body.avatar = studentAvatar.url
-            else throw new ExpressError('avatar is not uploaded')
+            const avatar = req.files?.avatar
+            if(avatar) {
+                const studentAvatar = await uploadFile({ file: req.files?.avatar })
+                if (studentAvatar?.url) req.body.avatar = studentAvatar.url
+                else throw new ExpressError('avatar is not uploaded')
+            }
             const student = await StudentServices.create({ ...defaultStudetnValue, ...req.body })
             if (student?.error) {
-                if (studentAvatar?.url) await removeFile(studentAvatar.url)
+                if (req.body.avatar) await removeFile(req.body.avatar)
                 throw new ExpressError(student.message, student.status)
             }
             res.status(201).send(student)

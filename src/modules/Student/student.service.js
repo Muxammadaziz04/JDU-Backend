@@ -52,6 +52,7 @@ class StudentServices {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
                 where: { isDeleted: false },
+                order: [['createdAt', 'DESC']],
                 attributes: {
                     exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'role', 'bio', 'images', 'videos', 'createdAt', 'updatedAt'],
                     include: role === roles.RECRUITOR ? [

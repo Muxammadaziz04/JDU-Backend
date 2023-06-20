@@ -8,13 +8,11 @@ class RecruitorController {
     async create(req, res, next) {
         try {
             const avatar = req.files?.avatar
-
             if(avatar){
                 const recruitorAvatar = await uploadFile({file: avatar})
                 if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
                 else throw new ExpressError('avatar is not uploaded')
             }
-
             const recruitor = await RecruitorService.create(req.body)
             if(recruitor?.error){
                 if(req.body.avatar) await removeFile(req.body.avatar)
