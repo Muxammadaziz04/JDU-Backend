@@ -1,3 +1,4 @@
+const { roles } = require('../../constants/server.constants.js')
 const { defaultStudetnValue } = require('../../constants/student.constants.js')
 const ExpressError = require('../../errors/express.error.js')
 const { uploadFile, removeFile } = require('../../services/file.service.js')
@@ -42,6 +43,21 @@ class StudentController {
                     const prevValues = await StudentServices.findByPk(req.params.id)
                     prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
                 } else throw new ExpressError(studentAvatar?.message || 'avatar is not uploaded')
+            }
+
+            if(req.role !== roles.DECAN || req.user.id !== req.params.id){
+                throw new ExpressError('You dont have permission', 403)
+            } else if(req.user.id === req.params.id) {
+                if (body.password && !body.currentPassword) {
+                    throw new ExpressError('current password is required', 400)
+                } else if (body.password && body.confirmPassword === body.password) {
+                    const student = await StudentServices.checkPassword(body.currentPassword)
+                    if (!student || student.error) {
+                        throw new ExpressError('current password is not correct', 400)
+                    }
+                } else if (body.password && (body.confirmPassword !== body.password)) {
+                    throw new ExpressError('confirm password is not correct', 400)
+                }
             }
 
             const student = await StudentServices.update(req.params.id, body)

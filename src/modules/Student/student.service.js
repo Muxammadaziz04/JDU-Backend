@@ -1,3 +1,4 @@
+const sha256 = require('sha256')
 const { sequelize } = require('../../services/sequelize.service.js');
 const StudentModel = require('./student.model.js')
 const SequelizeError = require('../../errors/sequelize.error.js');
@@ -52,7 +53,7 @@ class StudentServices {
                 distinct: true,
                 where: { isDeleted: false },
                 attributes: {
-                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'courseNumber', 'role', 'bio', 'images', 'videos', 'createdAt', 'updatedAt'],
+                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'role', 'bio', 'images', 'videos', 'createdAt', 'updatedAt'],
                     include: role === roles.RECRUITOR ? [
                         [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '${userId}'))`), 'isSelected']
                     ] : []
@@ -130,6 +131,15 @@ class StudentServices {
             }
 
             return student?.[0]
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
+    async checkPassword(psw) {
+        try {
+            const student = await this.models.Students.findOne({ where: { password: sha256(psw) } })
+            return student
         } catch (error) {
             return SequelizeError(error)
         }

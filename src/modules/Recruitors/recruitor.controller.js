@@ -1,3 +1,4 @@
+const { roles } = require("../../constants/server.constants");
 const ExpressError = require("../../errors/express.error");
 const { uploadFile, removeFile } = require("../../services/file.service");
 const logger = require("../../services/logger.service");
@@ -8,6 +9,7 @@ class RecruitorController {
         try {
             const recruitorAvatar = await uploadFile({file: req.files?.avatar})
             if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
+            else throw new ExpressError('avatar is not uploaded')
             const recruitor = await RecruitorService.create(req.body)
             if(recruitor?.error){
                 if(recruitorAvatar?.url) await removeFile(recruitorAvatar.url)
@@ -38,27 +40,43 @@ class RecruitorController {
         }
     }
 
-    async update(req, res) {
+    async update(req, res, next) {
         try {
+            const avatar = req.files?.avatar
             const body = req.body
-            if (body.password && !body.currentPassword) {
-                res.status(409).send({ error: true, status: 409, message: 'current password is required' })
-                return
-            } else if (body.password && body.confirmPassword === body.password) {
-                const recruitor = await RecruitorService.checkPassword(body.currentPassword)
-                if (!recruitor || recruitor.error) {
-                    res.status(409).send({ error: true, status: 409, message: 'current password is not correct' })
-                    return
+
+            if (avatar) {
+                const recruitorAvatar = await uploadFile({ file: avatar })
+                if (recruitorAvatar.url) {
+                    body.avatar = recruitorAvatar.url
+                    const prevValues = await RecruitorService.findByPk(req.params.id)
+                    prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
+                } else throw new ExpressError(recruitorAvatar?.message || 'avatar is not uploaded')
+            }
+            
+            if(req.role !== roles.DECAN || req.user.id !== req.params.id){
+                throw new ExpressError('You dont have permission', 403)
+            } else if(req.user.id === req.params.id) {
+                if (body.password && !body.currentPassword) {
+                    throw new ExpressError('current password is required', 400)
+                } else if (body.password && body.confirmPassword === body.password) {
+                    const recruitor = await RecruitorService.checkPassword(body.currentPassword)
+                    if (!recruitor || recruitor.error) {
+                        throw new ExpressError('current password is not correct', 400)
+                    }
+                } else if (body.password && (body.confirmPassword !== body.password)) {
+                    throw new ExpressError('confirm password is not correct', 400)
                 }
-            } else if (body.password && body.confirmPassword !== body.password) {
-                res.status(409).send({ error: true, status: 409, message: 'confirm password is not correct' })
-                return
             }
 
             const recruitor = await RecruitorService.update(req.params?.id, body)
+            if(recruitor?.error) {
+                if (body.avatar) await removeFile(body.avatar)
+                throw new ExpressError(recruitor.message, recruitor.status)
+            }
             res.status(203).send(recruitor)
         } catch (error) {
-            logger.error(error.message)
+            next(error)
         }
     }
 

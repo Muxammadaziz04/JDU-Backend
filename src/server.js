@@ -7,6 +7,7 @@ const { PORT } = require('./constants/server.constants')
 const combineRoutes = require('./routers/index.js');
 const AuthMiddleware = require('./middlewares/auth.middleware.js');
 const logger = require('./services/logger.service.js');
+const LoggerMiddleware = require('./middlewares/logger.middleware.js');
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(fileUpload())
 app.use(express.urlencoded({ extended: true }));
 app.use(AuthMiddleware)
+app.use(LoggerMiddleware)
 
 combineRoutes(app)
 

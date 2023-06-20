@@ -24,6 +24,20 @@ class NewsServise {
         }
     }
 
+    async findByPk(id, lang) {
+        try {
+            const news = await this.models.News.findByPk(id, {
+                include: [
+                    { model: this.models.NewsCategories, as: 'category' },
+                    { model: this.models.NewsLanguages, as: 'languages', attributes: { exclude: ['newsId'] }, where: { ...(lang && { lang }) } }
+                ]
+            })
+            return news
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
     async getAll({ page = 1, limit = 10, lang }) {
         try {
             const news = await this.models.News.findAndCountAll({
@@ -76,10 +90,10 @@ class NewsServise {
             if (Array.isArray(body.languages)) {
                 body.languages.map(async lang => {
                     const newsLanguage = await this.models.NewsLanguages.findOne({ where: { newsId: id, lang: lang.lang } })
-                    if(newsLanguage) {
-                        await this.models.NewsLanguages.update(lang, {where: {id: newsLanguage?.id}})
+                    if (newsLanguage) {
+                        await this.models.NewsLanguages.update(lang, { where: { id: newsLanguage?.id } })
                     } else {
-                        await this.models.NewsLanguages.create({...lang, newsId: id})
+                        await this.models.NewsLanguages.create({ ...lang, newsId: id })
                     }
                 })
             }
