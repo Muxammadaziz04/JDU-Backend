@@ -7,12 +7,17 @@ const RecruitorService = require("./recruitor.service");
 class RecruitorController {
     async create(req, res, next) {
         try {
-            const recruitorAvatar = await uploadFile({file: req.files?.avatar})
-            if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
-            else throw new ExpressError('avatar is not uploaded')
+            const avatar = req.files?.avatar
+
+            if(avatar){
+                const recruitorAvatar = await uploadFile({file: avatar})
+                if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
+                else throw new ExpressError('avatar is not uploaded')
+            }
+
             const recruitor = await RecruitorService.create(req.body)
             if(recruitor?.error){
-                if(recruitorAvatar?.url) await removeFile(recruitorAvatar.url)
+                if(req.body.avatar) await removeFile(req.body.avatar)
                 throw new ExpressError(recruitor.message, recruitor.status)
             }
             res.status(201).send(recruitor)
