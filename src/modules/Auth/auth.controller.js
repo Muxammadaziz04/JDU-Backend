@@ -29,7 +29,7 @@ class AuthController {
 
     async logout(req, res) {
         try {
-            res.clearCookie('access_token')
+            res.cookie('access_token', null, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: "none" })
             res.status(203).send('Successful logout')
         } catch (error) {
             logger.error(error.message)
@@ -70,7 +70,7 @@ class AuthController {
             }
 
             const user = await AuthService.changePassword(req.body.userId, sha256(req.body.password))
-            if(user) {
+            if (user) {
                 await AuthService.deleteToken(req.body.userId)
             }
             res.status(203).send({
@@ -85,7 +85,7 @@ class AuthController {
     async getMe(req, res) {
         try {
             const user = await AuthService.getById(req.user.id)
-            if(!user){
+            if (!user) {
                 req.status(400).send(new ExpressError('user not found', 400))
             } else {
                 res.status(200).send(user)
