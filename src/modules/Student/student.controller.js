@@ -49,15 +49,17 @@ class StudentController {
             }
 
             if(req.user.id === req.params.id || req.role === roles.DECAN) {
-                if (body.password && !body.currentPassword) {
-                    throw new ExpressError('current password is required', 400)
-                } else if (body.password && body.confirmPassword === body.password) {
-                    const student = await StudentServices.checkPassword(body.currentPassword)
-                    if (!student || student.error) {
-                        throw new ExpressError('current password is not correct', 400)
+                if(req.role !== roles.DECAN) {
+                    if (body.password && !body.currentPassword) {
+                        throw new ExpressError('current password is required', 400)
+                    } else if (body.password && body.confirmPassword === body.password) {
+                        const student = await StudentServices.checkPassword(body.currentPassword)
+                        if (!student || student.error) {
+                            throw new ExpressError('current password is not correct', 400)
+                        }
+                    } else if (body.password && (body.confirmPassword !== body.password)) {
+                        throw new ExpressError('confirm password is not correct', 400)
                     }
-                } else if (body.password && (body.confirmPassword !== body.password)) {
-                    throw new ExpressError('confirm password is not correct', 400)
                 }
             } else throw new ExpressError('You dont have permission', 403)
 

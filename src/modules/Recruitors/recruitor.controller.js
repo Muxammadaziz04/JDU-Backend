@@ -58,15 +58,17 @@ class RecruitorController {
             }
             
             if(req.user.id === req.params.id || req.role === roles.DECAN) {
-                if (body.password && !body.currentPassword) {
-                    throw new ExpressError('current password is required', 400)
-                } else if (body.password && body.confirmPassword === body.password) {
-                    const recruitor = await RecruitorService.checkPassword(body.currentPassword)
-                    if (!recruitor || recruitor.error) {
-                        throw new ExpressError('current password is not correct', 400)
+                if(req.role !== roles.DECAN) {
+                    if (body.password && !body.currentPassword) {
+                        throw new ExpressError('current password is required', 400)
+                    } else if (body.password && body.confirmPassword === body.password) {
+                        const recruitor = await RecruitorService.checkPassword(body.currentPassword)
+                        if (!recruitor || recruitor.error) {
+                            throw new ExpressError('current password is not correct', 400)
+                        }
+                    } else if (body.password && (body.confirmPassword !== body.password)) {
+                        throw new ExpressError('confirm password is not correct', 400)
                     }
-                } else if (body.password && (body.confirmPassword !== body.password)) {
-                    throw new ExpressError('confirm password is not correct', 400)
                 }
             } else throw new ExpressError('You dont have permission', 403)
 
