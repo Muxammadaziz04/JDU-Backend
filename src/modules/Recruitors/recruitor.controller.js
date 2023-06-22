@@ -52,7 +52,7 @@ class RecruitorController {
                 const recruitorAvatar = await uploadFile({ file: avatar })
                 if (recruitorAvatar.url) {
                     body.avatar = recruitorAvatar.url
-                    const prevValues = await RecruitorService.findByPk(req.params.id)
+                    const prevValues = await RecruitorService.getById(req.params.id)
                     prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
                 } else throw new ExpressError(recruitorAvatar?.message || 'avatar is not uploaded')
             }
