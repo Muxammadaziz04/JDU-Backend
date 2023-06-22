@@ -11,17 +11,17 @@ class AuthService {
 
     async login({ loginId, password }) {
         try {
-            const student = await this.models.Students.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const student = await this.models.Students.findOne({ where: { loginId, password, isDeleted: false }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
             if (student) {
                 return student
             }
 
-            const recruitor = await this.models.Recruitors.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const recruitor = await this.models.Recruitors.findOne({ where: { loginId, password, isDeleted: false }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
             if (recruitor) {
                 return recruitor
             }
 
-            const decan = await this.models.Decan.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const decan = await this.models.Decan.findOne({ where: { loginId, password, isDeleted: false }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
             if (decan) {
                 return decan
             }
@@ -53,17 +53,17 @@ class AuthService {
 
     async getUserByEmail(email) {
         try {
-            const student = await this.models.Students.findOne({ where: { email }, attributes: ['id'] })
+            const student = await this.models.Students.findOne({ where: { email, isDeleted: false }, attributes: ['id'] })
             if (student) {
                 return student
             }
 
-            const recruitor = await this.models.Recruitors.findOne({ where: { email }, attributes: ['id'] })
+            const recruitor = await this.models.Recruitors.findOne({ where: { email, isDeleted: false }, attributes: ['id'] })
             if (recruitor) {
                 return recruitor
             }
 
-            const decan = await this.models.Decan.findOne({ where: { email }, attributes: ['id'] })
+            const decan = await this.models.Decan.findOne({ where: { email, isDeleted: false }, attributes: ['id'] })
             if (decan) {
                 return decan
             }

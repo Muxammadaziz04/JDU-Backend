@@ -63,7 +63,7 @@ class StudentServices {
                 },
                 order: [['createdAt', 'DESC']],
                 attributes: {
-                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'role', 'bio', 'images', 'videos', 'updatedAt'],
+                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'role', 'bio', 'images', 'videos', 'updatedAt'],
                     include: role === roles.RECRUITOR ? [
                         [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '${userId}'))`), 'isSelected']
                     ] : []
