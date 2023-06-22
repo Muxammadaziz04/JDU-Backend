@@ -113,7 +113,7 @@ class AuthService {
                 return recruitor
             }
 
-            const decan = await this.models.Decan.findOne({ where: { id } })
+            const decan = await this.models.Decan.findOne({ where: { id } }) 
             if (decan) {
                 this.models.Decan.update({ password }, { where: { id } })
                 return decan
