@@ -8,18 +8,20 @@ class NewsController {
     async create(req, res, next) {
         try {
             const body = req.body
-            const newsImage = await uploadFile({file: req.files?.image})
-            if(newsImage?.url) body.image = newsImage.url
-            else throw new ExpressError('News image is not uploaded')
+            if (req.files?.image) {
+                const newsImage = await uploadFile({ file: req.files?.image })
+                if (newsImage?.url) body.image = newsImage.url
+                else throw new ExpressError('News image is not uploaded')
+            }
 
             languages.forEach(lang => {
-                body.languages = body.languages || [] 
+                body.languages = body.languages || []
                 body[lang] && body.languages.push({ ...body[lang], lang })
             })
 
             const news = await NewsServise.create(body)
-            if(news?.error){
-                if(newsImage?.url) await removeFile(newsImage.url)
+            if (news?.error) {
+                if (body.image) await removeFile(body.image)
                 throw new ExpressError(news.message, news.status)
             }
             res.status(201).send(news)
@@ -61,12 +63,12 @@ class NewsController {
             }
 
             languages.forEach(lang => {
-                body.languages = body.languages || [] 
+                body.languages = body.languages || []
                 body[lang] && body.languages.push({ ...body[lang], lang })
             })
 
             const news = await NewsServise.update(req.params?.id, body)
-            if(news?.error) {
+            if (news?.error) {
                 if (body.image) await removeFile(body.image)
                 throw new ExpressError(news.message, news.status)
             }

@@ -26,8 +26,8 @@ class RecruitorController {
 
     async getAll(req, res) {
         try {
-            const { page, limit } = req.query
-            const recruitors = await RecruitorService.getAll({ page, limit })
+            const { page, limit, search } = req.query
+            const recruitors = await RecruitorService.getAll({ page, limit, search })
             res.status(200).send(recruitors)
         } catch (error) {
             logger.error(error.message)

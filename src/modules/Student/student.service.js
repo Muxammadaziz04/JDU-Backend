@@ -9,6 +9,7 @@ const semesterModel = require('../Semesters/semester.model.js');
 const UniversityPercentageModel = require('../UniversityPercentages/UniversityPercentage.model.js');
 const logger = require('../../services/logger.service.js');
 const { roles } = require('../../constants/server.constants.js');
+const { Op } = require('sequelize');
 
 class StudentServices {
     constructor(sequelize) {
@@ -47,14 +48,22 @@ class StudentServices {
         }
     }
 
-    async getAll({ page = 1, limit = 10, role, userId = '' }) {
+    async getAll({ page = 1, limit = 10, role, userId = '', search }) {
         try {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
-                where: { isDeleted: false },
+                where: {
+                    isDeleted: false,
+                    ...(search && {
+                        [Op.or]: [
+                            { firstName: { [Op.iLike]: '%' + search + '%' } },
+                            { lastName: { [Op.iLike]: '%' + search + '%' } },
+                        ]
+                    })
+                },
                 order: [['createdAt', 'DESC']],
                 attributes: {
-                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'role', 'bio', 'images', 'videos', 'createdAt', 'updatedAt'],
+                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'groupNumber', 'role', 'bio', 'images', 'videos', 'updatedAt'],
                     include: role === roles.RECRUITOR ? [
                         [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '${userId}'))`), 'isSelected']
                     ] : []
@@ -94,7 +103,7 @@ class StudentServices {
         } catch (error) {
             return SequelizeError(error)
         }
-    }   
+    }
 
     async update(id, body) {
         try {
@@ -175,17 +184,21 @@ class StudentServices {
                     },
                     {
                         model: this.models.Lessons, as: 'lessons',
-                        attributes: { exclude: ['studentId'], include: [
-                            // [sequelize.literal(`(select s."allCredits" from "Lessons" as l join (select sum(credit) as "allCredits", sm.id, sm."lessonId" from "Semesters" as sm join "LessonResults" as r on sm.id = r."semesterId" group by sm.id) as s on s."lessonId" = l.id where s."lessonId" = "Lessons".id)`), 'summ']
-                        ] },
+                        attributes: {
+                            exclude: ['studentId'], include: [
+                                // [sequelize.literal(`(select s."allCredits" from "Lessons" as l join (select sum(credit) as "allCredits", sm.id, sm."lessonId" from "Semesters" as sm join "LessonResults" as r on sm.id = r."semesterId" group by sm.id) as s on s."lessonId" = l.id where s."lessonId" = "Lessons".id)`), 'summ']
+                            ]
+                        },
                         include: [
                             {
-                                model: this.models.Semesters, as: 'semesters', attributes: { exclude: ['lessonId'], include: [
-                                    // [sequelize.literal(`(select sum(credit) from "Semesters" as s left join "LessonResults" as l on s.id = l."semesterId" where s.id = "Lessons".id group by s.id)`), 'all']
-                                ] }, 
+                                model: this.models.Semesters, as: 'semesters', attributes: {
+                                    exclude: ['lessonId'], include: [
+                                        // [sequelize.literal(`(select sum(credit) from "Semesters" as s left join "LessonResults" as l on s.id = l."semesterId" where s.id = "Lessons".id group by s.id)`), 'all']
+                                    ]
+                                },
                                 order: ['semesterNumber'],
                                 include: [
-                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }   
+                                    { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
                                 ]
                             }
                         ],

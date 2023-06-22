@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const sha256 = require('sha256')
 const SequelizeError = require("../../errors/sequelize.error");
 const { sequelize } = require("../../services/sequelize.service");
@@ -18,10 +19,18 @@ class RecruitorService {
         }
     }
 
-    async getAll({ page = 1, limit = 10 }) {
+    async getAll({ page = 1, limit = 10, search }) {
         try {
             const recruitors = await this.models.Recruitors.findAndCountAll({
-                where: { isDeleted: false },
+                where: { 
+                    isDeleted: false,
+                    ...(search && {
+                        [Op.or]: [
+                            { firstName: { [Op.iLike]: '%' + search + '%' } },
+                            { lastName: { [Op.iLike]: '%' + search + '%' } },
+                        ]
+                    })
+                },
                 order: [['createdAt', 'DESC']],
                 attributes: { exclude: ['password', 'isDeleted'] },
                 offset: (page - 1) * limit,
