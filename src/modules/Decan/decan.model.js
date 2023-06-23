@@ -65,6 +65,10 @@ module.exports = (sequelize) => {
                     validateLinks
                 }
             },
+            isDeleted: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            }
         }, {
             sequelize,
             modelName: 'Decan'

@@ -12,9 +12,9 @@ class AuthController {
         try {
             const { loginId, password } = req.body
             const user = await AuthService.login({ loginId, password: sha256(password) })
-
+            
             if (!user || user?.error) {
-                res.status(409).send(new ExpressError('Incorrect email or password', 409))
+                res.status(409).send(new ExpressError('Incorrect id or password', 409))
             } else {
                 const token = jwt.sign(JSON.stringify(user))
                 res
