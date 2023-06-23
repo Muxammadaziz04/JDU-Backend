@@ -167,6 +167,13 @@ class StudentServices {
     async findByPk(id) {
         try {
             const student = await this.models.Students.findByPk(id, {
+                order: [
+                    [
+                        { model: this.models.Lessons, as: 'lessons' }, 
+                        { model: this.models.Semesters, as: 'semesters' }, 
+                        'semesterNumber', 
+                        'ASC'
+                    ]],
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
@@ -192,11 +199,11 @@ class StudentServices {
                         include: [
                             {
                                 model: this.models.Semesters, as: 'semesters', attributes: {
-                                    exclude: ['lessonId'], include: [
+                                    exclude: ['lessonId'],
+                                    include: [
                                         // [sequelize.literal(`(select sum(credit) from "Semesters" as s left join "LessonResults" as l on s.id = l."semesterId" where s.id = "Lessons".id group by s.id)`), 'all']
                                     ]
                                 },
-                                order: ['semesterNumber'],
                                 include: [
                                     { model: this.models.LessonResults, as: 'results', attributes: { exclude: ['semesterId'] } }
                                 ]
