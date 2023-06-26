@@ -20,7 +20,7 @@ class DecanServices {
 
     async update(body) {
         try {
-            const decan = await this.models.Decan.update(body, { returning: true })
+            const decan = await this.models.Decan.update(body, { where: {}, returning: true })
             return decan
         } catch (error) {
             return SequelizeError(error)
