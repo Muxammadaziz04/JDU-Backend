@@ -167,11 +167,12 @@ class StudentServices {
     async findByPk(id) {
         try {
             const student = await this.models.Students.findByPk(id, {
+                where: { isDeleted: false },
                 order: [
                     [
-                        { model: this.models.Lessons, as: 'lessons' }, 
-                        { model: this.models.Semesters, as: 'semesters' }, 
-                        'semesterNumber', 
+                        { model: this.models.Lessons, as: 'lessons' },
+                        { model: this.models.Semesters, as: 'semesters' },
+                        'semesterNumber',
                         'ASC'
                     ]],
                 include: [
@@ -222,6 +223,7 @@ class StudentServices {
     async getTopStudents({ page = 1, limit = 10 }) {
         try {
             const topStudents = await this.models.Students.findAndCountAll({
+                where: { isDeleted: false },
                 attributes: ['id', 'firstName', 'lastName', 'avatar'],
                 order: [['universityPercentage', 'AllMarks', 'DESC']],
                 include: [{ model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: ['AllMarks'] }],

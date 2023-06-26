@@ -23,7 +23,7 @@ const uploadFile = async ({ file, folderName = '' }) => {
             fd.append('video', file?.data, file?.name)
         } else {
             url = '/upload/file'
-            fd.append('file', file?.data, file?.name)
+            fd.append('file', file?.data, file?.name)   
         }
 
         const res = await api.post(url, fd, { ...fd.getHeaders() })
