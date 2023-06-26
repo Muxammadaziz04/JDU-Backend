@@ -18,6 +18,15 @@ class DecanServices {
         }
     }
 
+    async getById(id) {
+        try {
+            const decan = await this.models.Decan.findOne({ where: { id } })
+            return decan
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
     async checkPassword(psw) {
         try {
             const decan = await this.models.Decan.findOne({ where: { password: sha256(psw) } })

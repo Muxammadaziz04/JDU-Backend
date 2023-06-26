@@ -1,11 +1,22 @@
 const DecanServices = require('./decan.service.js')
-const logger = require("../../services/logger.service");
 const ExpressError = require('../../errors/express.error');
+const { uploadFile, removeFile } = require('../../services/file.service.js');
 
 class DecanController {
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             const body = req.body
+            const avatar = req.files?.avatar
+
+            if (avatar) {
+                const decanAvatar = await uploadFile({ file: avatar })
+                if (decanAvatar.url) {
+                    body.avatar = decanAvatar.url
+                    const prevValues = await DecanServices.getById(req.params.id)
+                    prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
+                } else throw new ExpressError(decanAvatar?.message || 'avatar is not uploaded')
+            }
+
             if (body.password && !body.currentPassword) {
                 res.status(409).send(new ExpressError('current password is required', 409))
                 return
@@ -23,7 +34,7 @@ class DecanController {
             const decan = await DecanServices.update(req.params?.id, body)
             res.status(203).send(decan)
         } catch (error) {
-            logger.error(error.message)
+            next(error)
         }
     }
 }
