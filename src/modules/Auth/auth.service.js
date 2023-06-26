@@ -32,17 +32,17 @@ class AuthService {
 
     async getById(id) {
         try {
-            const student = await this.models.Students.findOne({ where: { id }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const student = await this.models.Students.findOne({ where: { id }, attributes: {exclude: ['password', 'isDeleted']} })
             if (student) {
                 return student
             }
 
-            const recruitor = await this.models.Recruitors.findOne({ where: { id }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const recruitor = await this.models.Recruitors.findOne({ where: { id }, attributes: {exclude: ['password', 'isDeleted']} })
             if (recruitor) {
                 return recruitor
             }
 
-            const decan = await this.models.Decan.findOne({ where: { id }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            const decan = await this.models.Decan.findOne({ where: { id }, attributes: {exclude: ['password', 'isDeleted']} })
             if (decan) {
                 return decan
             }
