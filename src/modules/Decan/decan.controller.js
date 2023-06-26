@@ -31,11 +31,13 @@ class DecanController {
                 return
             }
 
+            
+            const decan = await DecanServices.update(body)
+
             if(!decan || decan?.error) {
                 throw new ExpressError(decan?.message, decan?.status)
             }
-
-            const decan = await DecanServices.update(body)
+            
             res.status(203).send(decan)
         } catch (error) {
             next(error)
