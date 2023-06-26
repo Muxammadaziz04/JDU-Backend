@@ -32,7 +32,7 @@ class DecanController {
             }
 
             if(!decan || decan?.error) {
-                throw new ExpressError(decan.message, decan.status)
+                throw new ExpressError(decan?.message, decan?.status)
             }
 
             const decan = await DecanServices.update(body)
