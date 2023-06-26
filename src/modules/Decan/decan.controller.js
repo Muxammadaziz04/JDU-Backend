@@ -12,7 +12,7 @@ class DecanController {
                 const decanAvatar = await uploadFile({ file: avatar })
                 if (decanAvatar.url) {
                     body.avatar = decanAvatar.url
-                    const prevValues = await DecanServices.getById(req.params.id)
+                    const prevValues = await DecanServices.getMe()
                     prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
                 } else throw new ExpressError(decanAvatar?.message || 'avatar is not uploaded')
             }
@@ -31,8 +31,17 @@ class DecanController {
                 return
             }
 
-            const decan = await DecanServices.update(req.params?.id, body)
+            const decan = await DecanServices.update(body)
             res.status(203).send(decan)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getDecan(req, res, next) {
+        try {
+            const decan = await DecanServices.getMe()
+            res.status(200).send(decan)
         } catch (error) {
             next(error)
         }

@@ -2,6 +2,7 @@ const router = require('express').Router()
 const DecanController = require('../modules/Decan/decan.controller.js')
 const Controller = new DecanController()
 
-router.put('/decan/:id', Controller.update)
+router.get('/decan', Controller.getDecan)
+router.put('/decan', Controller.update)
 
 module.exports = router

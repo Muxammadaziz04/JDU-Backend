@@ -9,18 +9,18 @@ class DecanServices {
         this.models = sequelize.models
     }
 
-    async update(id, body) {
+    async getMe() {
         try {
-            const decan = await this.models.Decan.update(body, { where: { id }, returning: true })
+            const decan = await this.models.Decan.findOne({ attributes: { exclude: ['password', 'isDeleted'] } })
             return decan
         } catch (error) {
             return SequelizeError(error)
         }
     }
 
-    async getById(id) {
+    async update(body) {
         try {
-            const decan = await this.models.Decan.findOne({ where: { id } })
+            const decan = await this.models.Decan.update(body, { returning: true })
             return decan
         } catch (error) {
             return SequelizeError(error)
