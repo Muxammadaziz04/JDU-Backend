@@ -1,3 +1,4 @@
+const sha256 = require('sha256')
 const { Model, DataTypes, Sequelize } = require("sequelize");
 const { roles } = require("../../constants/server.constants");
 const logger = require("../../services/logger.service");
@@ -74,7 +75,17 @@ module.exports = (sequelize) => {
             }
         }, {
             sequelize,
-            modelName: 'Decan'
+            modelName: 'Decan',
+            hooks: {
+                beforeCreate: (model) => {
+                    const values = model.dataValues
+                    model.password = sha256(values.password)
+                },
+                beforeUpdate: (model) => {
+                    const values = model.dataValues
+                    model.password = sha256(values.password)
+                }
+            }
         })
 
         return Decan

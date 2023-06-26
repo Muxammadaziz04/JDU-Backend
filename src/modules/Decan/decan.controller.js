@@ -30,14 +30,13 @@ class DecanController {
                 res.status(409).send(new ExpressError('confirm password is not correct', 409))
                 return
             }
-
             
             const decan = await DecanServices.update(body)
 
             if(!decan || decan?.error) {
                 throw new ExpressError(decan?.message, decan?.status)
             }
-            
+
             res.status(203).send(decan)
         } catch (error) {
             next(error)
