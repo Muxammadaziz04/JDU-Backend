@@ -16,6 +16,9 @@ class NewsController {
 
             languages.forEach(lang => {
                 body.languages = body.languages || []
+                if(typeof body?.[lang] === 'string') {
+                    body[lang] = JSON.parse(body?.[lang])
+                }
                 body[lang] && body.languages.push({ ...body[lang], lang })
             })
 
