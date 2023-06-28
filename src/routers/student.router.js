@@ -8,7 +8,7 @@ const Controller = new StudentController()
 router.get('/students', Controller.getStudents)
 router.get('/students/top', Controller.getTopStudents)
 router.get('/student/:id', Controller.findById)
-router.post('/student', validationMiddleware(studentSchema), Controller.createStudent)
+router.post('/student', Controller.createStudent)
 router.put('/student/:id', Controller.updateStudent)
 router.delete('/student/:id', Controller.deleteStudent)
 

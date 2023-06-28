@@ -39,6 +39,18 @@ class StudentController {
             const avatar = req.files?.avatar
             const body = req.body
 
+            if(typeof body?.japanLanguageTests === 'string') {
+                body.japanLanguageTests = JSON.parse(body.japanLanguageTests)
+            }
+
+            if(typeof body?.universityPercentage === 'string') {
+                body.universityPercentage = JSON.parse(body.universityPercentage)
+            }
+
+            if(typeof body?.itQualification === 'string') {
+                body.itQualification = JSON.parse(body.itQualification)
+            }
+
             if (avatar) {
                 const studentAvatar = await uploadFile({ file: avatar })
                 if (studentAvatar.url) {
