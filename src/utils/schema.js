@@ -10,6 +10,7 @@ const studentSchema = Joi.object({
     courseNumber: Joi.alternatives(Joi.string().regex(/^\d+$/), Joi.number().min(1)).required(),
     avatar: Joi.string().uri(),
     bio: Joi.string(),
+    email: Joi.string().email(),
     images: Joi.array().items(Joi.string().uri()),
     videos: Joi.array().items(Joi.string().uri()),
     specialisationId: Joi.string().uuid().required(),
