@@ -86,6 +86,7 @@ module.exports = (sequelize) => {
                     model.password = sha256(values.password)
                 },
                 beforeBulkUpdate: (model) => {
+                    console.log(model);
                     const values = model.dataValues
                     model.password = sha256(values.password)
                 }

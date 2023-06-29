@@ -31,7 +31,7 @@ class DecanController {
                 return
             }
             
-            const decan = await DecanServices.update(body)
+            const decan = await DecanServices.update(req.user?.id, body)
 
             if(!decan || decan?.error) {
                 throw new ExpressError(decan?.message, decan?.status)
