@@ -41,6 +41,11 @@ module.exports = (sequelize) => {
                         if (decan) {
                             throw new Error('loginId must be unique')
                         }
+
+                        const teacher = await sequelize.models.Teachers.findOne({ where: { loginId: value } })
+                        if (teacher) {
+                            throw new Error('loginId must be unique')
+                        }
                     }
                 }
             },

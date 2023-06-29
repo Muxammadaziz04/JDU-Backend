@@ -43,6 +43,11 @@ module.exports = (sequelize) => {
                         if (decan) {
                             throw new Error('loginId must be unique')
                         }
+
+                        const teacher = await sequelize.models.Teachers.findOne({ where: { loginId: value } })
+                        if (teacher) {
+                            throw new Error('loginId must be unique')
+                        }
                     }
                 }
             },
@@ -56,6 +61,7 @@ module.exports = (sequelize) => {
             email: {
                 type: DataTypes.STRING,
                 unique: true,
+                allowNull: false,
                 validate: {
                     isEmail: true
                 }
@@ -103,6 +109,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
                 allowNull: false
+            },
+            cv: {
+                type: DataTypes.STRING,
+                validate: {
+                    validateLinks
+                },
             }
         }, {
             sequelize,

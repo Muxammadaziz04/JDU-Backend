@@ -6,7 +6,8 @@ const constants = {
     roles: {
         RECRUITOR: 'recruitor',
         STUDENT: 'student',
-        DECAN: 'decan'
+        DECAN: 'decan',
+        TEACHER: 'teacher'
     },
     languages: ['uz', 'jp', 'en']
 }

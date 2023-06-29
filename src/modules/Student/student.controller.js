@@ -1,7 +1,10 @@
+const { welcomeTemplate } = require('../../configs/email.config.js')
 const { roles } = require('../../constants/server.constants.js')
 const { defaultStudetnValue } = require('../../constants/student.constants.js')
 const ExpressError = require('../../errors/express.error.js')
+const sendEmail = require('../../services/email.service.js')
 const { uploadFile, removeFile } = require('../../services/file.service.js')
+const { generatePassword } = require('../../utils/generator.js')
 const StudentServices = require('./student.service.js')
 
 class StudentController {
@@ -18,16 +21,32 @@ class StudentController {
     async createStudent(req, res, next) {
         try {
             const avatar = req.files?.avatar
+            const cv = req.files?.cv
+            const body = req.body
+
+            body.password = body.password || generatePassword()
+
             if(avatar) {
-                const studentAvatar = await uploadFile({ file: req.files?.avatar })
-                if (studentAvatar?.url) req.body.avatar = studentAvatar.url
+                const studentAvatar = await uploadFile({ file: avatar })
+                if (studentAvatar?.url) body.avatar = studentAvatar.url
                 else throw new ExpressError('avatar is not uploaded')
             }
-            const student = await StudentServices.create({ ...defaultStudetnValue, ...req.body })
+
+            if(cv) {
+                const studentCv = await uploadFile({ file: cv })
+                if (studentCv?.url) body.cv = studentCv.url
+                else throw new ExpressError('cv is not uploaded')
+            }
+
+            const student = await StudentServices.create({ ...defaultStudetnValue, ...body })
             if (student?.error) {
-                if (req.body.avatar) await removeFile(req.body.avatar)
+                if (body.avatar) await removeFile(body.avatar)
+                if(body.cv) await removeFile(body.cv)
                 throw new ExpressError(student.message, student.status)
             }
+
+            await sendEmail({ to: body.email, subject: 'Welcome to JDU system', html: welcomeTemplate({ loginId: body.loginId, password: body.password }) })
+
             res.status(201).send(student)
         } catch (error) {
             next(error)

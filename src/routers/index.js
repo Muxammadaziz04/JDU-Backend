@@ -8,6 +8,7 @@ const decan = require('./decan.router.js')
 const newsCategory = require('./newsCategory.router')
 const news = require('./news.router.js')
 const FileUpload = require('./fileUpload.router')
+const teacher = require('./teacher.router.js')
 
 const routes = [
     studentRouter,
@@ -19,7 +20,8 @@ const routes = [
     decan,
     newsCategory,
     news,
-    FileUpload
+    FileUpload,
+    teacher
 ]
 
 const combineRoutes = (app) => {

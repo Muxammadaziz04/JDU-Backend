@@ -1,23 +1,35 @@
+const { welcomeTemplate } = require("../../configs/email.config");
 const { roles } = require("../../constants/server.constants");
 const ExpressError = require("../../errors/express.error");
+const sendEmail = require("../../services/email.service");
 const { uploadFile, removeFile } = require("../../services/file.service");
 const logger = require("../../services/logger.service");
+const { generatePassword } = require("../../utils/generator");
 const RecruitorService = require("./recruitor.service");
 
 class RecruitorController {
     async create(req, res, next) {
         try {
             const avatar = req.files?.avatar
-            if(avatar){
-                const recruitorAvatar = await uploadFile({file: avatar})
-                if(recruitorAvatar?.url) req.body.avatar = recruitorAvatar.url
+            const body = req.body
+
+            body.password = body.password || generatePassword()
+            body.loginId = body.loginId || await RecruitorService.generateLoginId()
+
+            if (avatar) {
+                const recruitorAvatar = await uploadFile({ file: avatar })
+                if (recruitorAvatar?.url) body.avatar = recruitorAvatar.url
                 else throw new ExpressError('avatar is not uploaded')
             }
-            const recruitor = await RecruitorService.create(req.body)
-            if(recruitor?.error){
-                if(req.body.avatar) await removeFile(req.body.avatar)
+            
+            const recruitor = await RecruitorService.create(body)
+            if (recruitor?.error) {
+                if (body.avatar) await removeFile(body.avatar)
                 throw new ExpressError(recruitor.message, recruitor.status)
             }
+
+            await sendEmail({ to: body.email, subject: 'Welcome to JDU system', html: welcomeTemplate({ loginId: body.loginId, password: body.password }) })
+
             res.status(201).send(recruitor)
         } catch (error) {
             next(error)
@@ -56,9 +68,9 @@ class RecruitorController {
                     prevValues.dataValues?.avatar && await removeFile(prevValues.dataValues?.avatar)
                 } else throw new ExpressError(recruitorAvatar?.message || 'avatar is not uploaded')
             }
-            
-            if(req.user.id === req.params.id || req.role === roles.DECAN) {
-                if(req.role !== roles.DECAN) {
+
+            if (req.user.id === req.params.id || req.role === roles.DECAN) {
+                if (req.role !== roles.DECAN) {
                     if (body.password && !body.currentPassword) {
                         throw new ExpressError('current password is required', 400)
                     } else if (body.password && body.confirmPassword === body.password) {
@@ -73,7 +85,7 @@ class RecruitorController {
             } else throw new ExpressError('You dont have permission', 403)
 
             const recruitor = await RecruitorService.update(req.params?.id, body)
-            if(recruitor?.error) {
+            if (recruitor?.error) {
                 if (body.avatar) await removeFile(body.avatar)
                 throw new ExpressError(recruitor.message, recruitor.status)
             }

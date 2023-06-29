@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const sha256 = require('sha256')
 const SequelizeError = require("../../errors/sequelize.error");
 const { sequelize } = require("../../services/sequelize.service");
+const { generateLoginId } = require('../../utils/generator');
 const recruitorModel = require("./recruitor.model");
 
 class RecruitorService {
@@ -22,7 +23,7 @@ class RecruitorService {
     async getAll({ page = 1, limit = 10, search }) {
         try {
             const recruitors = await this.models.Recruitors.findAndCountAll({
-                where: { 
+                where: {
                     isDeleted: false,
                     ...(search && {
                         [Op.or]: [
@@ -122,6 +123,21 @@ class RecruitorService {
                 ]
             })
             return recruitor?.students ?? []
+        } catch (error) {
+            return SequelizeError(error)
+        }
+    }
+
+    async generateLoginId() {
+        try {
+            const loginId = generateLoginId()
+            const isExist = await this.models.Recruitors.findOne({ where: { loginId } })
+
+            if(isExist) {
+                this.generateLoginId()
+            } else {
+                return loginId
+            }
         } catch (error) {
             return SequelizeError(error)
         }
