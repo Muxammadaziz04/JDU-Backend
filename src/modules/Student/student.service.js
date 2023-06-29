@@ -135,7 +135,7 @@ class StudentServices {
                                     ]
                                 }
                             })
-
+console.log(result);
                             if (result) {
                                 await this.models.ItQualificationResults.update({ procent: skill?.procent }, {
                                     where: {
