@@ -121,8 +121,8 @@ class StudentServices {
             }
 
             if (body?.itQualification) {
-                const itQualification = await this.models.itQualifications.findOne({where: {studentId: id}})
-               await this.models.ItQualifications.update(body.itQualification, { where: { studentId: id }, returning: true })
+                const itQualification = await this.models.ItQualifications.findOne({ where: { studentId: id } })
+                await this.models.ItQualifications.update(body.itQualification, { where: { studentId: id }, returning: true })
                 if (Array.isArray(body?.itQualification?.skills)) {
                     await Promise.all(body?.itQualification?.skills?.map(async skill => {
                         try {
