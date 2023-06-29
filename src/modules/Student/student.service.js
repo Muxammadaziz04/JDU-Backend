@@ -122,7 +122,7 @@ class StudentServices {
 
             if (body?.itQualification) {
                 let itQualification = await this.models.ItQualifications.findOne({ where: { studentId: id } })
-                await this.models.ItQualifications.update(body.itQualification, { where: { studentId: id }, returning: true })
+                await this.models.ItQualifications.update({ description: body?.itQualification?.description }, { where: { studentId: id }, returning: true })
 
                 if (Array.isArray(body?.itQualification?.skills)) {
                     await Promise.all(body?.itQualification?.skills?.map(async skill => {
@@ -135,7 +135,7 @@ class StudentServices {
                                     ]
                                 }
                             })
-                            console.log(result);
+
                             if (result) {
                                 await this.models.ItQualificationResults.update({ procent: skill?.procent }, {
                                     where: {
@@ -143,7 +143,7 @@ class StudentServices {
                                             { ItQualificationId: itQualification?.dataValues?.id },
                                             { skillId: skill?.skillId }
                                         ]
-                                    }, returning: true
+                                    }
                                 })
                             } else {
                                 await this.models.ItQualificationResults.create({ ...skill, ItQualificationId: itQualification?.dataValues?.id })
