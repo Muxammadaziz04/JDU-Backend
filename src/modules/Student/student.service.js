@@ -129,7 +129,7 @@ class StudentServices {
                         try {
                             const result = await this.models.ItQualificationResults.findOne({ where: { ItQualificationId: itQualification?.dataValues?.id, skillId: skill?.skillId } })
                             if (result) {
-                                await this.models.ItQualificationResults.update(skill, { where: { ItQualificationId: itQualification?.dataValues?.id, skillId: skill?.skillId }, returning: true })
+                                await this.models.ItQualificationResults.update({procent: skill?.procent}, { where: { ItQualificationId: itQualification?.dataValues?.id, skillId: skill?.skillId }, returning: true })
                             } else {
                                 await this.models.ItQualificationResults.create({ ...skill, ItQualificationId: itQualification?.dataValues?.id })
                             }
