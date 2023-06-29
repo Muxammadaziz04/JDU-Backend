@@ -135,7 +135,10 @@ class StudentServices {
                                     ]
                                 }
                             })
-console.log(result);
+console.log([
+    { ItQualificationId: itQualification?.dataValues?.id },
+    { skillId: skill?.skillId }
+]);
                             if (result) {
                                 await this.models.ItQualificationResults.update({ procent: skill?.procent }, {
                                     where: {
