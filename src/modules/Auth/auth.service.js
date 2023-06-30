@@ -25,6 +25,11 @@ class AuthService {
             if (decan) {
                 return decan
             }
+
+            const teacher = await this.models.Teachers.findOne({ where: { loginId, password }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
+            if (teacher) {
+                return teacher
+            }
         } catch (error) {
             return SequelizeError(error)
         }
@@ -46,6 +51,11 @@ class AuthService {
             if (decan) {
                 return decan
             }
+
+            const teacher = await this.models.Teachers.findOne({ where: { id }, attributes: {exclude: ['password']} })
+            if (teacher) {
+                return teacher
+            }
         } catch (error) {
             return SequelizeError(error)
         }
@@ -66,6 +76,11 @@ class AuthService {
             const decan = await this.models.Decan.findOne({ where: { email, isDeleted: false }, attributes: ['id'] })
             if (decan) {
                 return decan
+            }
+
+            const teacher = await this.models.Teachers.findOne({ where: { email }, attributes: ['id'] })
+            if (teacher) {
+                return teacher
             }
         } catch (error) {
             return SequelizeError(error)
@@ -117,6 +132,12 @@ class AuthService {
             if (decan) {
                 this.models.Decan.update({ password }, { where: { id } })
                 return decan
+            }
+
+            const teacher = await this.models.Teachers.findOne({ where: { id } }) 
+            if (teacher) {
+                this.models.Teachers.update({ password }, { where: { id } })
+                return teacher
             }
         } catch (error) {
             return SequelizeError(error)
