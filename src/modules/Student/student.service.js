@@ -156,7 +156,7 @@ class StudentServices {
             }
 
             if (body?.universityPercentage) {
-                await this.models.UniversityPercentages.update(body?.universityPercentage, { where: { studentId: id } })
+                await this.models.UniversityPercentages.update(body?.universityPercentage, { where: { studentId: id }, individualHooks: true })
             }
 
             return student?.[0]
