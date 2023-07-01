@@ -6,12 +6,12 @@ class UniversityPercentage extends Model { }
 function calculateAllMarks(model) {
     const value = model.dataValues
 
-    const Attendee = value.Attendee
-    const ItCourse = value.ItCourse
-    const JapanLanguage = value.JapanLanguage
-    const SannoUniversity = value.SannoUniversity
-    const UzSWLUniversity = value.UzSWLUniversity
-    const CoWork = value.CoWork
+    const Attendee = +value.Attendee
+    const ItCourse = +value.ItCourse
+    const JapanLanguage = +value.JapanLanguage
+    const SannoUniversity = +value.SannoUniversity
+    const UzSWLUniversity = +value.UzSWLUniversity
+    const CoWork = +value.CoWork
 
     const results = [Attendee, ItCourse, JapanLanguage, SannoUniversity, UzSWLUniversity, CoWork]
 
