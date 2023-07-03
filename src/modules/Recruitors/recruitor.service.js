@@ -20,7 +20,7 @@ class RecruitorService {
         }
     }
 
-    async getAll({ page = 1, limit = 10, search }) {
+    async getAll({ page = 1, limit = 10, search, company }) {
         try {
             const recruitors = await this.models.Recruitors.findAndCountAll({
                 where: {
@@ -30,6 +30,9 @@ class RecruitorService {
                             { firstName: { [Op.iLike]: '%' + search + '%' } },
                             { lastName: { [Op.iLike]: '%' + search + '%' } },
                         ]
+                    }),
+                    ...(company && {
+                        companyName: {[Op.iLike]: '%' + company + '%'}
                     })
                 },
                 order: [['createdAt', 'DESC']],

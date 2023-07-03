@@ -48,7 +48,7 @@ class StudentServices {
         }
     }
 
-    async getAll({ page = 1, limit = 10, role, userId = '', search }) {
+    async getAll({ page = 1, limit = 10, role, userId = '', search, group, year, rate }) {
         try {
             let students = await this.models.Students.findAndCountAll({
                 distinct: true,
@@ -59,6 +59,12 @@ class StudentServices {
                             { firstName: { [Op.iLike]: '%' + search + '%' } },
                             { lastName: { [Op.iLike]: '%' + search + '%' } },
                         ]
+                    }),
+                    ...(group && {
+                        groupNumber: { [Op.iLike]: '%' + group + '%' }
+                    }),
+                    ...(year && {
+                        courseNumber: { [Op.eq]: year }
                     })
                 },
                 order: [['createdAt', 'DESC']],
@@ -71,7 +77,18 @@ class StudentServices {
                 include: [
                     { model: this.models.Specialisations, as: 'specialisation' },
                     // { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
-                    { model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: ['AllMarks'] },
+                    {
+                        model: this.models.UniversityPercentages,
+                        as: 'universityPercentage',
+                        attributes: ['AllMarks'],
+                        where: {
+                            ...(rate && {
+                                ...(rate === 'low' && { AllMarks: { [Op.between]: [0, 40] } }),
+                                ...(rate === 'medium' && { AllMarks: { [Op.between]: [40, 80] } }),
+                                ...(rate === 'high' && { AllMarks: { [Op.between]: [80, 100] } }),
+                            })
+                        }
+                    },
                     {
                         model: this.models.ItQualifications, as: 'itQualification',
                         attributes: { exclude: ['studentId', 'id'] },

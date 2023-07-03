@@ -10,8 +10,7 @@ const StudentServices = require('./student.service.js')
 class StudentController {
     async getStudents(req, res) {
         try {
-            const { page, limit } = req.query
-            const students = await StudentServices.getAll({ page, limit, role: req.role, userId: req.user?.id, search: req.query?.search })
+            const students = await StudentServices.getAll({ role: req.role, userId: req.user?.id, ...req.query })
             res.status(200).send(students)
         } catch (error) {
 
