@@ -68,7 +68,7 @@ class NewsServise {
         }
     }
 
-    async getPublishedNews({ page = 1, limit = 10, categoryId = null, lang }) {
+    async getPublishedNews({ page = 1, limit = 10, categoryId = null, lang, search }) {
         try {
             const currentDate = new Date();
             const news = await this.models.News.findAndCountAll({
@@ -81,7 +81,16 @@ class NewsServise {
                 },
                 include: [
                     { model: this.models.NewsCategories, as: 'category' },
-                    { model: this.models.NewsLanguages, as: 'languages', attributes: { exclude: ['newsId'] }, where: { ...(lang && { lang }) } }
+                    { model: this.models.NewsLanguages, as: 'languages', attributes: { exclude: ['newsId'] }, where: { 
+                        ...(lang && { lang }),
+                        ...(search && {
+                            [Op.or]: [
+                                { title: { [Op.iLike]: '%' + search + '%' } },
+                                { shortDescription: { [Op.iLike]: '%' + search + '%' } },
+                                { description: { [Op.iLike]: '%' + search + '%' } },
+                            ]
+                        })
+                    } }
                 ],
                 attributes: { exclude: ['categoryId'] },
                 order: [['publishDate', 'DESC']],
