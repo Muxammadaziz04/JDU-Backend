@@ -21,6 +21,7 @@ class DecanServices {
     async update(id, body) {
         try {
             const [_, decan] = await this.models.Decan.update(body, { where: { id }, returning: true, individualHooks: true })
+            console.log(decan);
             return decan?.[0]
         } catch (error) {
             return SequelizeError(error)

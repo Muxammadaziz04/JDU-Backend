@@ -84,15 +84,21 @@ module.exports = (sequelize) => {
             hooks: {
                 beforeCreate: (model) => {
                     const values = model.dataValues
-                    model.password = sha256(values.password)
+                    if(values?.password){
+                        model.password = sha256(values.password)
+                    }
                 },
                 beforeUpdate: (model) => {
                     const values = model.dataValues
-                    model.password = sha256(values.password)
+                    if(values?.password){
+                        model.password = sha256(values.password)
+                    }
                 },
                 beforeBulkUpdate: (model) => {
                     const values = model.attributes
-                    model.password = sha256(values?.password)
+                    if(values?.password){
+                        model.password = sha256(values?.password)
+                    }
                 }
             }
         })
