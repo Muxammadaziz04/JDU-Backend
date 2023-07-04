@@ -36,6 +36,9 @@ class NewsController {
     async getAll(req, res) {
         try {
             const news = await NewsServise.getAll(req.query)
+            if (news?.error) {
+                throw new ExpressError(news.message, news.status)
+            }
             res.status(200).send(news)
         } catch (error) {
             logger.error(error.message)
@@ -45,6 +48,9 @@ class NewsController {
     async getPublishedNews(req, res) {
         try {
             const news = await NewsServise.getPublishedNews(req.query)
+            if (news?.error) {
+                throw new ExpressError(news.message, news.status)
+            }
             res.status(200).send(news)
         } catch (error) {
             logger.error(error.message)
@@ -84,6 +90,9 @@ class NewsController {
     async getById(req, res, next) {
         try {
             const news = await NewsServise.findByPk(req.params?.id, req.query?.lang)
+            if (news?.error) {
+                throw new ExpressError(news.message, news.status)
+            }
             res.status(200).send(news)
         } catch (error) {
             next(error)
@@ -93,6 +102,9 @@ class NewsController {
     async delete(req, res) {
         try {
             const news = await NewsServise.delete(req.params?.id)
+            if (news?.error) {
+                throw new ExpressError(news.message, news.status)
+            }
             res.status(203).send('deleted')
         } catch (error) {
             logger.error(error.message)
