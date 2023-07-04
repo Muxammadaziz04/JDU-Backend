@@ -128,7 +128,7 @@ module.exports = (sequelize) => {
                 },
                 beforeUpdate: (model) => {
                     const values = model.dataValues
-                    if(values?.password){
+                    if(model._previousDataValues?.password !== values?.password){
                         model.password = sha256(values.password)
                     }
                 }
