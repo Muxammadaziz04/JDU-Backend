@@ -17,7 +17,7 @@ class AuthService {
             }
 
             const recruitor = await this.models.Recruitors.findOne({ where: { loginId, password, isDeleted: false }, attributes: ['firstName', 'lastName', 'loginId', 'avatar', 'id', 'role'] })
-            if (recruitor) {A
+            if (recruitor) {
                 return recruitor
             }
 

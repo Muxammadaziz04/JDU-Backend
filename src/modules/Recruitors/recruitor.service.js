@@ -13,7 +13,7 @@ class RecruitorService {
 
     async create(body) {
         try {
-            const recruitor = await this.models.Recruitors.create(body)
+            const recruitor = await this.models.Recruitors.create(body, { individualHooks: true })
             return recruitor
         } catch (error) {
             return SequelizeError(error)
@@ -32,7 +32,7 @@ class RecruitorService {
                         ]
                     }),
                     ...(company && {
-                        companyName: {[Op.iLike]: '%' + company + '%'}
+                        companyName: { [Op.iLike]: '%' + company + '%' }
                     })
                 },
                 order: [['createdAt', 'DESC']],
@@ -136,7 +136,7 @@ class RecruitorService {
             const loginId = generateLoginId()
             const isExist = await this.models.Recruitors.findOne({ where: { loginId } })
 
-            if(isExist) {
+            if (isExist) {
                 this.generateLoginId()
             } else {
                 return loginId
