@@ -28,7 +28,7 @@ const constants = {
         },
         lessons: [
             {
-                name: 'Japanese',
+                name: '日本語',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
@@ -42,7 +42,7 @@ const constants = {
                 ]
             },
             {
-                name: 'employment culture',
+                name: '就業文化',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
@@ -56,7 +56,7 @@ const constants = {
                 ]
             },
             {
-                name: 'university curriculum',
+                name: '大学カリキュラム',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
@@ -70,7 +70,7 @@ const constants = {
                 ]
             },
             {
-                name: 'college cali',
+                name: 'エンジニア資格',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
@@ -84,7 +84,7 @@ const constants = {
                 ]
             },
             {
-                name: 'business execution skills',
+                name: '業務遂行スキル',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
@@ -98,7 +98,7 @@ const constants = {
                 ]
             },
             {
-                name: 'world language university',
+                name: '世界言語大学',
                 semesters: [
                     { semesterNumber: 1 },
                     { semesterNumber: 2 },
