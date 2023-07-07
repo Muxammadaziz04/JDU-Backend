@@ -27,10 +27,6 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true,
                 validate: {
-                    len: {
-                        args: [6, 6],
-                        msg: 'Login id length should be 6 character'
-                    },
                     isUnique: async function (value) {
                         const recruitor = await sequelize.models.Students.findOne({ where: { loginId: value } })
                         if (recruitor) {
