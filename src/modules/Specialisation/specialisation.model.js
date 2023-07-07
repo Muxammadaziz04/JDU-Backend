@@ -25,13 +25,13 @@ module.exports = (sequelize) => {
         })
 
         Specialisation.associate = (models) => {
-            // models.Specialisations.hasMany(models.Students, {
-            //     foreignKey: {
-            //         name: 'specialisationId',
-            //         allowNull: false
-            //     },
-            //     as: 'specialisation'
-            // })
+            models.Specialisations.hasMany(models.Students, {
+                foreignKey: {
+                    name: 'specialisationId',
+                    allowNull: true
+                },
+                as: 'specialisation'
+            })
         }
 
         return Specialisation
