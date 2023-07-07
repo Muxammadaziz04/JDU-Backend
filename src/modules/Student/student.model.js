@@ -132,13 +132,13 @@ module.exports = (sequelize) => {
         });
 
         Student.associate = (models) => {
-            models.Students.belongsTo(models.Specialisations, {
-                foreignKey: {
-                    name: 'specialisationId',
-                    allowNull: true
-                },
-                as: 'specialisation'
-            })
+            // models.Students.belongsTo(models.Specialisations, {
+            //     foreignKey: {
+            //         name: 'specialisationId',
+            //         allowNull: true
+            //     },
+            //     as: 'specialisation'
+            // })
 
             models.Students.hasMany(models.JapanLanguageTests, {
                 foreignKey: {

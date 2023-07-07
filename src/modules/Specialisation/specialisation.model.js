@@ -24,15 +24,15 @@ module.exports = (sequelize) => {
             modelName: 'Specialisations'
         })
 
-        Specialisation.associate = (models) => {
-            models.Specialisations.hasMany(models.Students, {
-                foreignKey: {
-                    name: 'specialisationId',
-                    allowNull: true
-                },
-                as: 'specialisation'
-            })
-        }
+        // Specialisation.associate = (models) => {
+        //     models.Specialisations.hasMany(models.Students, {
+        //         foreignKey: {
+        //             name: 'specialisationId',
+        //             allowNull: true
+        //         },
+        //         as: 'specialisation'
+        //     })
+        // }
 
         return Specialisation
     } catch (error) {
