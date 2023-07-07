@@ -69,13 +69,12 @@ class StudentServices {
                 },
                 order: [['createdAt', 'DESC']],
                 attributes: {
-                    exclude: ['specialisationId', 'password', 'isDeleted', 'email', 'role', 'bio', 'images', 'videos', 'updatedAt'],
+                    exclude: ['password', 'isDeleted', 'email', 'role', 'bio', 'images', 'videos', 'updatedAt'],
                     include: role === roles.RECRUITOR ? [
                         [sequelize.literal(`(SELECT EXISTS(SELECT * FROM "SelectedStudents" WHERE "StudentId" = "Students".id AND "RecruitorId" = '${userId}'))`), 'isSelected']
                     ] : []
                 },
                 include: [
-                    { model: this.models.Specialisations, as: 'specialisation' },
                     // { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
                     {
                         model: this.models.UniversityPercentages,
@@ -212,7 +211,6 @@ class StudentServices {
                         'ASC'
                     ]],
                 include: [
-                    { model: this.models.Specialisations, as: 'specialisation' },
                     { model: this.models.JapanLanguageTests, as: 'japanLanguageTests', attributes: { exclude: ['studentId'] } },
                     { model: this.models.UniversityPercentages, as: 'universityPercentage', attributes: { exclude: ['studentId'] } },
                     {
@@ -248,7 +246,7 @@ class StudentServices {
                         ],
                     }
                 ],
-                attributes: { exclude: ['specialisationId', 'password', 'isDeleted',] },
+                attributes: { exclude: ['password', 'isDeleted',] },
             })
             return student?.isDeleted ? {} : student
         } catch (error) {
