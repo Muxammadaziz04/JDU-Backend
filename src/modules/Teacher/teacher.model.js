@@ -42,6 +42,11 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 unique: true,
                 validate: {
+                    validateId: (value) => {
+                        if(!/^[0-9]+$/.test(value)){
+                            throw new Error('login id must be only numeric')
+                        }
+                    },
                     isUnique: async function (value) {
                         const recruitor = await sequelize.models.Recruitors.findOne({ where: { loginId: value } })
                         if (recruitor) {
