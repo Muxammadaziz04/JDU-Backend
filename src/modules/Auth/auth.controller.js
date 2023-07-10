@@ -16,7 +16,7 @@ class AuthController {
             if (!user || user?.error) {
                 res.status(409).send(new ExpressError('Incorrect id or password', 409))
             } else {
-                const token = jwt.sign(JSON.stringify({...user, remember}))
+                const token = jwt.sign(JSON.stringify({...user?.dataValues, remember}))
                 res
                     .status(200)
                     .cookie('access_token', token, { 
