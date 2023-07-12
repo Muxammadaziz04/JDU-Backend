@@ -2,13 +2,13 @@ const constants = {
     defaultStudetnValue: {
         japanLanguageTests: [
             {
-                name: "JLPT №4",
+                name: "JLPT N4",
                 listening: 0,
                 writing: 0,
                 reading: 0
             },
             {
-                name: "NAT Q2 №4",
+                name: "NAT Q2",
                 listening: 0,
                 writing: 0,
                 reading: 0
