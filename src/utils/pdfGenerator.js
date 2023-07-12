@@ -1,4 +1,3 @@
-const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const PdfDocument = require('pdfkit')
@@ -34,7 +33,7 @@ const skill = ({
 }) => {
     try {
         doc
-        .font(path.resolve(__dirname, './Inter-Regular.ttf'))
+        .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
         .fontSize(9)
         .fillColor('#000')
         .text(name, 60, startY)
@@ -71,7 +70,7 @@ const JapanTest = ({
         name = name?.split(' ')
 
         doc
-            .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
             .fontSize(11)
             .fillColor('#000')
             .text(name?.[0], 68, startY)
@@ -94,7 +93,7 @@ const JapanTest = ({
             .fill()
 
         doc
-            .font(path.resolve(__dirname, './Inter-Regular.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
             .fontSize(9)
             .fillColor('#000')
             .text(`${listening}%`, 68, startY + 18 + 4 + 16 + 2 + 4)
@@ -193,13 +192,13 @@ const createCv = async ({
             .fillOpacity(1)
 
         doc
-            .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
             .fontSize(24)
             .fillColor('#111E35')
             .text(fullName, 100, paddingFromTop + 5)
 
         doc
-            .font(path.resolve(__dirname, './Inter-Regular.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
             .fontSize(9)
             .fillColor('#1381E6')
             .text(`ID: ${id}`, 108, paddingFromTop + fullNameHeigth + 13)
@@ -223,7 +222,7 @@ const createCv = async ({
             .stroke()
 
         doc
-            .font(path.resolve(__dirname, './Inter-Medium.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Medium.ttf'))
             .fillColor('#5627DC')
             .text(email, 100, paddingFromTop + fullNameHeigth + 9 + 19 + 10)
 
@@ -237,13 +236,13 @@ const createCv = async ({
 
         if (bio) {
             doc
-                .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
                 .text('About me', 60, headerHeight + paddingfromTopToAbout)
 
             doc
-                .font(path.resolve(__dirname, './Inter-Regular.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
                 .fontSize(9)
                 .lineGap(2)
                 .fillColor('#475569')
@@ -276,7 +275,7 @@ const createCv = async ({
             }
 
             doc
-                .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
                 .text('Japan Language Test', 60, heightJapanLanguage)
@@ -341,7 +340,7 @@ const createCv = async ({
             }
 
             doc
-                .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
                 .text('IT qualification', 60, itQualificationHeight)
@@ -427,7 +426,7 @@ const createCv = async ({
         }
 
         doc
-            .font(path.resolve(__dirname, './Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
             .fontSize(11)
             .fillColor('#000')
             .text('Credit Acquisition Status', 60, CreditHeight)

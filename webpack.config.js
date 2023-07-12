@@ -15,6 +15,7 @@ module.exports = {
         __dirname: false,
         __filename: false,
     },
+    target: 'node',
     externals: [
         nodeExternals()
     ],
@@ -33,11 +34,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js'],
-        fallback: {
-            "fs": false,
-            "path": false
-        },
+        extensions: ['.js', '.ts'],
     },
     performance: {
         hints: false
