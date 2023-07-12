@@ -33,7 +33,11 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js']
+        extensions: ['.js'],
+        fallback: {
+            "fs": false,
+            "path": false
+        },
     },
     performance: {
         hints: false
