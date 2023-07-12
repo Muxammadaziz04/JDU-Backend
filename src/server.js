@@ -18,7 +18,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(fileUpload())
 app.use(express.urlencoded({ extended: true }));
-app.use(AuthMiddleware)
+// app.use(AuthMiddleware)
 app.use(LoggerMiddleware)
 
 combineRoutes(app)

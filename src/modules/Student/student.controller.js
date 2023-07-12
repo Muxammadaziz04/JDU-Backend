@@ -5,6 +5,7 @@ const ExpressError = require('../../errors/express.error.js')
 const sendEmail = require('../../services/email.service.js')
 const { uploadFile, removeFile } = require('../../services/file.service.js')
 const { generatePassword } = require('../../utils/generator.js')
+const createCv = require('../../utils/pdfGenerator.js')
 const StudentServices = require('./student.service.js')
 
 class StudentController {
@@ -25,13 +26,13 @@ class StudentController {
 
             body.password = body.password || generatePassword()
 
-            if(avatar) {
+            if (avatar) {
                 const studentAvatar = await uploadFile({ file: avatar })
                 if (studentAvatar?.url) body.avatar = studentAvatar.url
                 else throw new ExpressError('avatar is not uploaded')
             }
 
-            if(cv) {
+            if (cv) {
                 const studentCv = await uploadFile({ file: cv })
                 if (studentCv?.url) body.cv = studentCv.url
                 else throw new ExpressError('cv is not uploaded')
@@ -40,7 +41,7 @@ class StudentController {
             const student = await StudentServices.create({ ...defaultStudetnValue, ...body })
             if (student?.error) {
                 if (body.avatar) await removeFile(body.avatar)
-                if(body.cv) await removeFile(body.cv)
+                if (body.cv) await removeFile(body.cv)
                 throw new ExpressError(student.message, student.status)
             }
 
@@ -57,15 +58,15 @@ class StudentController {
             const avatar = req.files?.avatar
             const body = req.body
 
-            if(typeof body?.japanLanguageTests === 'string') {
+            if (typeof body?.japanLanguageTests === 'string') {
                 body.japanLanguageTests = JSON.parse(body.japanLanguageTests)
             }
 
-            if(typeof body?.universityPercentage === 'string') {
+            if (typeof body?.universityPercentage === 'string') {
                 body.universityPercentage = JSON.parse(body.universityPercentage)
             }
 
-            if(typeof body?.itQualification === 'string') {
+            if (typeof body?.itQualification === 'string') {
                 body.itQualification = JSON.parse(body.itQualification)
             }
 
@@ -78,8 +79,8 @@ class StudentController {
                 } else throw new ExpressError(studentAvatar?.message || 'avatar is not uploaded')
             }
 
-            if(req.user.id === req.params.id || req.role === roles.DECAN) {
-                if(req.role !== roles.DECAN) {
+            if (req.user.id === req.params.id || req.role === roles.DECAN) {
+                if (req.role !== roles.DECAN) {
                     if (body.password && !body.currentPassword) {
                         throw new ExpressError('current password is required', 400)
                     } else if (body.password && body.confirmPassword === body.password) {
@@ -94,7 +95,7 @@ class StudentController {
             } else throw new ExpressError('You dont have permission', 403)
 
             const student = await StudentServices.update(req.params.id, body)
-            if(student?.error) {
+            if (student?.error) {
                 if (body.avatar) await removeFile(body.avatar)
                 throw new ExpressError(student.message, student.status)
             }
@@ -126,6 +127,37 @@ class StudentController {
         try {
             const topStudents = await StudentServices.getTopStudents({ page: req.query?.page, limit: req.query?.limit })
             res.status(200).send(topStudents)
+        } catch (error) {
+
+        }
+    }
+
+    async generateCv(req, res) {
+        try {
+            let student = await StudentServices.findByPk(req.params.id)
+            student = student.dataValues
+
+            let filename =  `${student?.firstName} ${student?.lastName}`
+            // Stripping special characters
+            filename = encodeURIComponent(filename) + '.pdf'
+            // Setting response to 'attachment' (download).
+            // If you use 'inline' here it will automatically open the PDF
+            res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"')
+            res.setHeader('Content-type', 'application/pdf')
+
+            await createCv({
+                res,
+                avatarUrl: student.avatar,
+                fullName: `${student?.firstName} ${student?.lastName}`,
+                id: student.loginId,
+                courseNumber: student.courseNumber,
+                email: student?.email,
+                bio: student.bio,
+                japanLanguageTest: student.japanLanguageTests,
+                itQualification: student?.itQualification,
+                universityPercentage: student?.universityPercentage
+            })
+
         } catch (error) {
 
         }
