@@ -33,7 +33,7 @@ const skill = ({
 }) => {
     try {
         doc
-        .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
+        .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
         .fontSize(9)
         .fillColor('#000')
         .text(name, 60, startY)
@@ -70,7 +70,7 @@ const JapanTest = ({
         name = name?.split(' ')
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fontSize(11)
             .fillColor('#000')
             .text(name?.[0], 68, startY)
@@ -93,13 +93,13 @@ const JapanTest = ({
             .fill()
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fontSize(9)
             .fillColor('#000')
             .text(`${listening}%`, 68, startY + 18 + 4 + 16 + 2 + 4)
-            .text('Listening', 98, startY + 18 + 4 + 16 + 2 + 4)
+            .text('聴解', 98, startY + 18 + 4 + 16 + 2 + 4)
 
-        let textSize = doc.widthOfString('Listening')
+        let textSize = doc.widthOfString('聴解')
 
         doc
             .roundedRect(60, startY + 18 + 4 + 16, textSize + 46, 24, 100)
@@ -117,9 +117,9 @@ const JapanTest = ({
             .fontSize(9)
             .fillColor('#000')
             .text(`${reading}%`, 60 + listeningSize + 18, startY + 18 + 4 + 16 + 2 + 4)
-            .text('Reading', 60 + listeningSize + 10 + 38, startY + 18 + 4 + 16 + 2 + 4)
+            .text('読解', 60 + listeningSize + 10 + 38, startY + 18 + 4 + 16 + 2 + 4)
 
-        textSize = doc.widthOfString('Reading')
+        textSize = doc.widthOfString('読解')
 
         doc
             .roundedRect(60 + listeningSize + 10, startY + 18 + 4 + 16, textSize + 46, 24, 100)
@@ -137,9 +137,9 @@ const JapanTest = ({
             .fontSize(9)
             .fillColor('#000')
             .text(`${writing}%`, 60 + readingSize + 18, startY + 18 + 4 + 16 + 2 + 4)
-            .text('Writing', 60 + readingSize + 10 + 38, startY + 18 + 4 + 16 + 2 + 4)
+            .text('筆記', 60 + readingSize + 10 + 38, startY + 18 + 4 + 16 + 2 + 4)
 
-        textSize = doc.widthOfString('Writing')
+        textSize = doc.widthOfString('筆記')
 
         doc
             .roundedRect(60 + readingSize + 10, startY + 18 + 4 + 16, textSize + 46, 24, 100)
@@ -150,7 +150,7 @@ const JapanTest = ({
 
         doc
             .fillColor('#3374F3')
-            .text('-> Link to view', 399, startY + 18 + 4 + 22, { link })
+            .text('ビューへのリンク', 383, startY + 18 + 4 + 22, { link })
     } catch (error) {
         console.log(error);
     }
@@ -192,13 +192,13 @@ const createCv = async ({
             .fillOpacity(1)
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fontSize(24)
             .fillColor('#111E35')
             .text(fullName, 100, paddingFromTop + 5)
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fontSize(9)
             .fillColor('#1381E6')
             .text(`ID: ${id}`, 108, paddingFromTop + fullNameHeigth + 13)
@@ -213,16 +213,16 @@ const createCv = async ({
 
         doc
             .fillColor('#74828F')
-            .text(`${courseNumber} year`, 100 + idRectWidth + 5 + 8, paddingFromTop + fullNameHeigth + 13)
+            .text(`${courseNumber} 年`, 100 + idRectWidth + 5 + 8, paddingFromTop + fullNameHeigth + 13)
 
-        const courseNumberWidth = doc.widthOfString(`${courseNumber} year`)
+        const courseNumberWidth = doc.widthOfString(`${courseNumber} 年`)
         doc
             .roundedRect(100 + idRectWidth + 5, paddingFromTop + fullNameHeigth + 9, courseNumberWidth + 16, 19, 10)
             .strokeColor('#74828F')
             .stroke()
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Medium.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fillColor('#5627DC')
             .text(email, 100, paddingFromTop + fullNameHeigth + 9 + 19 + 10)
 
@@ -236,13 +236,13 @@ const createCv = async ({
 
         if (bio) {
             doc
-                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
-                .text('About me', 60, headerHeight + paddingfromTopToAbout)
+                .text('自己紹介', 60, headerHeight + paddingfromTopToAbout)
 
             doc
-                .font(path.resolve(__dirname, '../assets/fonts/Inter-Regular.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
                 .fontSize(9)
                 .lineGap(2)
                 .fillColor('#475569')
@@ -275,10 +275,10 @@ const createCv = async ({
             }
 
             doc
-                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
-                .text('Japan Language Test', 60, heightJapanLanguage)
+                .text('日本語試験', 60, heightJapanLanguage)
 
             heightJapanLanguage += 13
 
@@ -340,10 +340,10 @@ const createCv = async ({
             }
 
             doc
-                .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+                .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
                 .fontSize(11)
                 .fillColor('#000')
-                .text('IT qualification', 60, itQualificationHeight)
+                .text('IT資格', 60, itQualificationHeight)
 
             itQualificationHeight += 13
 
@@ -426,10 +426,10 @@ const createCv = async ({
         }
 
         doc
-            .font(path.resolve(__dirname, '../assets/fonts/Inter-Bold.ttf'))
+            .font(path.resolve(__dirname, '../assets/fonts/Arial Unicode MS Font.ttf'))
             .fontSize(11)
             .fillColor('#000')
-            .text('Credit Acquisition Status', 60, CreditHeight)
+            .text('大学のパーセンテージ', 60, CreditHeight)
 
         CreditHeight += 11
 
@@ -451,7 +451,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'Attendee',
+            name: '出席',
             procent: universityPercentage?.Attendee,
             color: '#000',
             startY: CreditHeight
@@ -475,7 +475,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'ItCourse',
+            name: 'ITコース',
             procent: universityPercentage?.ItCourse,
             color: '#000',
             startY: CreditHeight
@@ -499,7 +499,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'JapanLanguage',
+            name: '日本語',
             procent: universityPercentage?.JapanLanguage,
             color: '#000',
             startY: CreditHeight
@@ -523,7 +523,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'SannoUniversity',
+            name: '産能大学',
             procent: universityPercentage?.SannoUniversity,
             color: '#000',
             startY: CreditHeight
@@ -547,7 +547,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'UzSWLUniversity',
+            name: '世界言語大学',
             procent: universityPercentage?.UzSWLUniversity,
             color: '#000',
             startY: CreditHeight
@@ -572,7 +572,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'CoWork',
+            name: 'コワーキング',
             procent: universityPercentage?.CoWork,
             color: '#000',
             startY: CreditHeight
@@ -596,7 +596,7 @@ const createCv = async ({
         }
         skill({
             doc,
-            name: 'All',
+            name: 'すべてのマーク',
             procent: universityPercentage?.AllMarks,
             color: '#5627DC',
             startY: CreditHeight
